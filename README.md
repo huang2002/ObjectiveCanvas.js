@@ -54,6 +54,7 @@ As you can see, it is very useful, especially when you want to draw one more sha
 * fill(ctx?)
 * stroke(ctx?)
 * draw(ctx?)
+* path(ctx?)
 * ...
 
 For more info, just see "ObjectiveCanvas.js"
