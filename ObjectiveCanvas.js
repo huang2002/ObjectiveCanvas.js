@@ -133,6 +133,7 @@
         // set lineWidth
         this.setLineWidth = function(val) {
             this.lineWidth = val;
+            return this;
         };
         // lineCap
         this.lineCap = "butt";
@@ -159,6 +160,7 @@
             ctx.fillStyle = this.fillStyle;
             ctx.fill();
             ctx.restore();
+            return this;
         };
         // stroke shape
         this.stroke = function(ctx = OC.defaultContext) {
@@ -170,11 +172,11 @@
             ctx.lineJoin = this.lineJoin;
             ctx.stroke();
             ctx.restore();
+            return this;
         };
         // draw shape
         this.draw = function(ctx = OC.defaultContext) {
-            this.fill(ctx);
-            this.stroke(ctx);
+            return this.fill(ctx).stroke(ctx);
         };
         // init
         this.x = x;
