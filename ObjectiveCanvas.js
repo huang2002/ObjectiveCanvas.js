@@ -272,10 +272,10 @@
             return this;
         };
         // scale
-        _scale = this.scale;
         this.scale = function(val) {
             if (typeof val === "number") {
-                _scale(val);
+                this.w *= val;
+                this.h *= val;
                 this.r *= val;
                 return this;
             } else {
@@ -283,7 +283,6 @@
             }
         };
         // set size
-        _setSize = this.setSize;
         this.setSize = function(w, h, r) {
             return this.setW(w).setH(h).setR(r);
         };
