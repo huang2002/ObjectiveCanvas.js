@@ -44,6 +44,7 @@ As you can see, it is very useful, especially when you want to draw one more sha
 ## Some constructors
 * Shape ( basic constructor for shapes )
 * Rect
+* RoundRect
 * Circle
 * ...
 
