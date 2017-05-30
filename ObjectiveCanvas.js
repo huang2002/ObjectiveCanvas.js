@@ -1,6 +1,6 @@
 /**
  * ObjectiveCanvas.js
- * By: hhh
+ * By: hhh ( https://github.com/huang2002/ObjectiveCanvas.js )
  */
 (function() {
 
