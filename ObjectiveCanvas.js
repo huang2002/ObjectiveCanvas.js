@@ -42,6 +42,7 @@
     // set default context
     OC.setDefultContext = function(ctx) {
         this.defaultContext = ctx;
+        return this;
     };
 
     // ------------------ //
