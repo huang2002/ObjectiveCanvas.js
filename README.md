@@ -53,7 +53,7 @@ As you can see, it is very useful, especially when you want to draw one more sha
 * scale(k)
 * fill(ctx?)
 * stroke(ctx?)
-* draw(ctx)
+* draw(ctx?)
 * ...
 
 For more info, just see "ObjectiveCanvas.js"
