@@ -58,4 +58,4 @@ As you can see, it is very useful, especially when you want to draw one more sha
 * path(ctx?)
 * ...
 
-For more info, just see "ObjectiveCanvas.js"
+For more info, see "ObjectiveCanvas.js"
