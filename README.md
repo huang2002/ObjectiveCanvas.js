@@ -30,7 +30,7 @@ OC.Circle.createNew(x, y, r).setFillStyle("#f00").fill(ctx);
 // or: OC.setDefaultContext(ctx).Circle.createNew(x, y, r).setFillStyle("#f00").fill();
 ```
 
-How about two ?
+How about two circles ?
 ```
 var ctx = document.getElementById("canvas").getContext("2d");
 var x1 = 100, y1 = 100, r1 = 50,
