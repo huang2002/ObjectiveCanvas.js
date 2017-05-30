@@ -1,6 +1,6 @@
 /**
  * ObjectiveCanvas.js
- * By: 3h
+ * By: hhh
  */
 (function() {
 
