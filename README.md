@@ -8,7 +8,7 @@ For example, if you want to draw a red circle, you can type like this:
 ```
 var ctx = document.getElementById("canvas").getContext("2d"); // get context
 var x = 100, y = 100, r = 50;
-var circle = new OC.Circle(x, y, r); // create a circle ( you can also type "var circle = OC.Circle.createNew(x, y, r);". )
+var circle = new OC.Circle(x, y, r); // create a circle ( equals "var circle = OC.Circle.createNew(x, y, r);". )
 circle.setFillStyle("#f00").fill(ctx); // equals "circle.setFillStyle("#f00"); circle.fill(ctx);"
  ```
 
