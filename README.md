@@ -48,7 +48,7 @@ As you can see, it is very useful, especially when you want to draw one more sha
 * Circle(x, y, r)
 * ...
 
-## Some method
+## Some methods
 * setPos(x, y)
 * translate(x, y)
 * scale(k)
