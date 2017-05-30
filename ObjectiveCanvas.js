@@ -342,6 +342,7 @@
         this.scale = function(val = 1) {
             if (typeof val === "number") {
                 this.r *= val;
+                return this;
             } else {
                 throw new ObjectiveCanvasTypeError("val");
             }
