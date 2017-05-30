@@ -47,4 +47,13 @@ As you can see, it is very useful, especially when you want to draw one more sha
 * Circle
 * ...
 
+## Some method
+* setPos(x, y)
+* translate(x, y)
+* scale(k)
+* fill(ctx?)
+* stroke(ctx?)
+* draw(ctx)
+* ...
+
 For more info, just see "ObjectiveCanvas.js"
