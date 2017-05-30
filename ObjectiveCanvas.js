@@ -50,7 +50,7 @@
     // ------------------ //
 
     // basic shape
-    OC.Shape = function() {
+    OC.Shape = function(x = 0, y = 0) {
         // x
         Object.defineProperty(this, 'x', {
             set: function(val) {
@@ -176,6 +176,9 @@
             this.fill(ctx);
             this.stroke(ctx);
         };
+        // init
+        this.x = x;
+        this.y = y;
     };
     OC.Shape.createNew = function() {
         return new this();

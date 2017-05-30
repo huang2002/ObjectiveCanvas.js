@@ -42,10 +42,10 @@ OC.Circle.createNew(x1, y1, r1).setFillStyle("#f00").fill(ctx).setPos(x2, y2, r2
 As you can see, it is very useful, especially when you want to draw one more shapes.
 
 ## Some constructors
-* Shape ( basic constructor for shapes )
-* Rect
-* RoundRect ( rect with round corners )
-* Circle
+* Shape(x, y) // basic constructor for shapes 
+* Rect(x, y, w, h)
+* RoundRect(x, y, w, h, r) // rect with round corners 
+* Circle(x, y, r)
 * ...
 
 ## Some method
