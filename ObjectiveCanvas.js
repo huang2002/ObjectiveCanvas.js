@@ -220,7 +220,7 @@
             return this.setW(w).setH(h);
         };
         // scale
-        this.scale = function(val = 1) {
+        this.scale = function(val) {
             if (typeof val == "number") {
                 this.w *= val;
                 this.h *= val;
@@ -244,6 +244,73 @@
     OC.Rect.prototype = new OC.Shape();
     OC.Rect.createNew = function(x = 0, y = 0, w = 0, h = 0) {
         return new this(x, y, w, h);
+    };
+
+    // round rect
+    OC.RoundRect = function(x = 0, y = 0, w = 0, h = 0, r = 0) {
+        // r
+        Object.defineProperty(this, "r", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._r = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("r");
+                }
+            },
+            get: function() {
+                return this._r || 0;
+            }
+        });
+        // set r
+        this.setR = function(val) {
+            this.r = val;
+            return this;
+        };
+        // scale
+        _scale = this.scale;
+        this.scale = function(val) {
+            if (typeof val === "number") {
+                _scale(val);
+                this.r *= val;
+                return this;
+            } else {
+                throw new ObjectiveCanvasTypeError("val");
+            }
+        };
+        // set size
+        _setSize = this.setSize;
+        this.setSize = function(w, h, r) {
+            return this.setW(w).setH(h).setR(r);
+        };
+        // path
+        this.path = function(ctx = OC.defaultContext) {
+            var x = this.x;
+            var y = this.y;
+            var w = this.w;
+            var h = this.h;
+            var r = this.r;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.arcTo(x + w, y, x + w, y + r, r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+            ctx.lineTo(x + r, y + h);
+            ctx.arcTo(x, y + h, x, y + h - r, r);
+            ctx.lineTo(x, y + r);
+            ctx.arcTo(x, y, x + r, y, r);
+            ctx.closePath();
+        };
+        // init
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.r = r;
+    };
+    OC.RoundRect.prototype = new OC.Rect();
+    OC.RoundRect.createNew = function(x = 0, y = 0, w = 0, h = 0, r = 0) {
+        return new this(x, y, w, h, r);
     };
 
     // circle
