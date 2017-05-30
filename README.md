@@ -4,7 +4,7 @@ To use &lt;canvas&gt; in a more beautiful way.
 ## What's ObjectiveCanvas(OC).js ?
 It contains some constructors, such as "Rect", "Circle" and so on.
 
-For example, if you want to draw a red circle, you can type like this:
+For example, if you want to draw a red circle, you can write like this:
 ```
 var ctx = document.getElementById("canvas").getContext("2d"); // get context
 var x = 100, y = 100, r = 50;
@@ -17,12 +17,12 @@ What's more, you can also set default context:
 OC.setDefaultContext(ctx); // equals "OC.defaultContext = ctx;"
 ```
 
-In this way, you can just type:
+In this way, you can just write:
 ```
 circle.fill();
 ```
 
-If you put them together, you can write:
+If you put them together:
 ```
 var ctx = document.getElementById("canvas").getContext("2d");
 var x = 100, y = 100, r = 50;
