@@ -365,6 +365,6 @@
     // ------ //
 
     // export
-    window.ObjectiveCanvas = OC;
+    window.OC = OC;
 
 })();
