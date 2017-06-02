@@ -115,9 +115,11 @@
         Object.defineProperty(this, "lineWidth", {
             set: function(val) {
                 if (typeof val === "number") {
-                    this._lineWidth = val;
-                } else if (val < 0) {
-                    throw new ObjectiveCanvasIllegalValueError("lineWidth");
+                    if (val < 0) {
+                        throw new ObjectiveCanvasIllegalValueError("lineWidth");
+                    } else {
+                        this._lineWidth = val;
+                    }
                 } else {
                     throw new ObjectiveCanvasTypeError("lineWidth");
                 }
@@ -154,7 +156,7 @@
             ctx.save();
             ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
             ctx.scale(this.scaleX, this.scaleY);
-            ctx.rotate(this.rotateDeg);
+            ctx.rotate(this.rotateDeg / 180 * Math.PI);
             this.path(ctx);
             ctx.restore();
         };
@@ -302,9 +304,11 @@
         Object.defineProperty(this, "w", {
             set: function(val) {
                 if (typeof val === "number") {
-                    this._w = val;
-                } else if (val < 0) {
-                    throw new ObjectiveCanvasIllegalValueError("w");
+                    if (val < 0) {
+                        throw new ObjectiveCanvasIllegalValueError("w");
+                    } else {
+                        this._w = val;
+                    }
                 } else {
                     throw new ObjectiveCanvasTypeError("w");
                 }
@@ -322,9 +326,11 @@
         Object.defineProperty(this, "h", {
             set: function(val) {
                 if (typeof val === "number") {
-                    this._h = val;
-                } else if (val < 0) {
-                    throw new ObjectiveCanvasIllegalValueError("h");
+                    if (val < 0) {
+                        throw new ObjectiveCanvasIllegalValueError("h");
+                    } else {
+                        this._h = val;
+                    }
                 } else {
                     throw new ObjectiveCanvasTypeError("h");
                 }
@@ -347,6 +353,7 @@
             ctx.beginPath();
             ctx.rect(0, 0, this.w, this.h);
             ctx.closePath();
+            return this;
         };
         // init
         this.x = x;
@@ -365,9 +372,11 @@
         Object.defineProperty(this, "r", {
             set: function(val) {
                 if (typeof val === "number") {
-                    this._r = val;
-                } else if (val < 0) {
-                    throw new ObjectiveCanvasIllegalValueError("r");
+                    if (val < 0) {
+                        throw new ObjectiveCanvasIllegalValueError("r");
+                    } else {
+                        this._r = val;
+                    }
                 } else {
                     throw new ObjectiveCanvasTypeError("r");
                 }
@@ -401,6 +410,7 @@
             ctx.lineTo(0, r);
             ctx.arcTo(0, 0, r, 0, r);
             ctx.closePath();
+            return this;
         };
         // init
         this.x = x;
@@ -420,9 +430,11 @@
         Object.defineProperty(this, "r", {
             set: function(val) {
                 if (typeof r === "number") {
-                    this._r = val;
-                } else if (val < 0) {
-                    throw new ObjectiveCanvasIllegalValueError("r");
+                    if (val < 0) {
+                        throw new ObjectiveCanvasIllegalValueError("r");
+                    } else {
+                        this._r = val;
+                    }
                 } else {
                     throw new ObjectiveCanvasTypeError('r');
                 }
@@ -438,9 +450,10 @@
         };
         // path
         this.path = function(ctx = OC.defaultContext) {
-            ctx.beginPath()
+            ctx.beginPath();
             ctx.arc(0, 0, this.r, 0, Math.PI * 2);
-            ctx.closePath()
+            ctx.closePath();
+            return this;
         };
         // init
         this.x = x;
@@ -450,6 +463,83 @@
     OC.Circle.prototype = new OC.Shape();
     OC.Circle.createNew = function(x = 0, y = 0, r = 0) {
         return new this(x, y, r);
+    };
+
+    // star 
+    OC.Star = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0) {
+        // innerRadius
+        Object.defineProperty(this, "innerRadius", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    if (val < 0) {
+                        throw new ObjectiveCanvasIllegalValueError("innerRadius");
+                    } else {
+                        this._innerRadius = val;
+                    }
+                } else {
+                    throw new ObjectiveCanvasTypeError("innerRadius");
+                }
+            },
+            get: function() {
+                return this._innerRadius;
+            }
+        });
+        // set innerRadius
+        this.setInnerRadius = function(val) {
+            this.innerRadius = val;
+            return this;
+        };
+        // outerRadius
+        Object.defineProperty(this, "outerRadius", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    if (val < 0) {
+                        throw new ObjectiveCanvasIllegalValueError("outerRadius");
+                    } else {
+                        this._outerRadius = val;
+                    }
+                } else {
+                    throw new ObjectiveCanvasTypeError("outerRadius");
+                }
+            },
+            get: function() {
+                return this._outerRadius;
+            }
+        });
+        // set outerRadius
+        this.setOuterRadius = function(val) {
+            this.outerRadius = val;
+            return this;
+        };
+        // set size
+        this.setSize = function(innerRadius, outerRadius) {
+            return this.setInnerRadius(innerRadius).setOuterRadius(outerRadius);
+        };
+        // path
+        this.path = function(ctx = OC.defaultContext) {
+            ctx.beginPath();
+            var r = this.innerRadius;
+            var R = this.outerRadius;
+            var sin = Math.sin;
+            var cos = Math.cos;
+            var PI = Math.PI;
+            ctx.moveTo(0, -R);
+            for (var i = 0; i < 5; i++) {
+                ctx.lineTo(r * sin((36 + i * 72) / 180 * PI), -r * cos((36 + i * 72) / 180 * PI));
+                ctx.lineTo(R * sin((72 + i * 72) / 180 * PI), -R * cos((72 + i * 72) / 180 * PI));
+            }
+            ctx.closePath();
+            return this;
+        };
+        // init
+        this.x = x;
+        this.y = y;
+        this.innerRadius = innerRadius;
+        this.outerRadius = outerRadius;
+    };
+    OC.Star.prototype = new OC.Shape();
+    OC.Star.createNew = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0) {
+        return new this(x, y, innerRadius, outerRadius);
     };
 
     // ------ //

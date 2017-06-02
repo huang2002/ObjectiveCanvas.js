@@ -25,6 +25,7 @@ In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective w
 * Rect
 * RoundRect
 * Circle
+* Star
 * ......
 ### Some methods:
 * setLineCap(lineCap)
@@ -35,7 +36,7 @@ In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective w
 * setFillStyle(style)
 * fill(ctx?)
 * translate(x, y)
-* scale(val)
+* scale(x, y)
 * rotate(deg)
 
 ## Advice
