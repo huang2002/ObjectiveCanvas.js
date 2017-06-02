@@ -15,16 +15,22 @@
     // ------------ //
 
     // TypeError
-    function ObjectiveCanvasTypeError(type) {
-        this.message = "Error type for '" + type + "'!";
+    function ObjectiveCanvasTypeError(property) {
+        this.message = "Error type for '" + property + "'!";
     }
     ObjectiveCanvasTypeError.prototype = new Error();
 
     // UndefinedError
-    function ObjectiveCanvasUndefinedError(method) {
-        this.message = method + " has not been defined!";
+    function ObjectiveCanvasUndefinedError(property) {
+        this.message = property + " has not been defined!";
     }
     ObjectiveCanvasUndefinedError.prototype = new Error();
+
+    // IllegalValueError
+    function ObjectiveCanvasIllegalValueError(property) {
+        this.message = "Illegal value for '" + property + "'!";
+    }
+    ObjectiveCanvasIllegalValueError.prototype = new Error();
 
     // --------- //
     // container //
@@ -110,6 +116,8 @@
             set: function(val) {
                 if (typeof val === "number") {
                     this._lineWidth = val;
+                } else if (val < 0) {
+                    throw new ObjectiveCanvasIllegalValueError("lineWidth");
                 } else {
                     throw new ObjectiveCanvasTypeError("lineWidth");
                 }
@@ -295,6 +303,8 @@
             set: function(val) {
                 if (typeof val === "number") {
                     this._w = val;
+                } else if (val < 0) {
+                    throw new ObjectiveCanvasIllegalValueError("w");
                 } else {
                     throw new ObjectiveCanvasTypeError("w");
                 }
@@ -313,6 +323,8 @@
             set: function(val) {
                 if (typeof val === "number") {
                     this._h = val;
+                } else if (val < 0) {
+                    throw new ObjectiveCanvasIllegalValueError("h");
                 } else {
                     throw new ObjectiveCanvasTypeError("h");
                 }
@@ -354,6 +366,8 @@
             set: function(val) {
                 if (typeof val === "number") {
                     this._r = val;
+                } else if (val < 0) {
+                    throw new ObjectiveCanvasIllegalValueError("r");
                 } else {
                     throw new ObjectiveCanvasTypeError("r");
                 }
@@ -375,7 +389,7 @@
         this.path = function(ctx = OC.defaultContext) {
             var w = this.w;
             var h = this.h;
-            var r = this.r;
+            var r = Math.max(Math.min(this.r, Math.min(w, h) / 2), 0);
             ctx.beginPath();
             ctx.moveTo(r, 0);
             ctx.lineTo(w - r, 0);
@@ -407,6 +421,8 @@
             set: function(val) {
                 if (typeof r === "number") {
                     this._r = val;
+                } else if (val < 0) {
+                    throw new ObjectiveCanvasIllegalValueError("r");
                 } else {
                     throw new ObjectiveCanvasTypeError('r');
                 }
