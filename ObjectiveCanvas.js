@@ -195,6 +195,79 @@
             this.offsetY = val;
             return this;
         };
+        // shadow blur
+        Object.defineProperty(this, "shadowBlur", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    if (val < 0) {
+                        throw new ObjectiveCanvasIllegalValueError("shadowBlur");
+                    } else {
+                        this._shadowBlur = val;
+                    }
+                } else {
+                    throw new ObjectiveCanvasTypeError("shadowBlur");
+                }
+            },
+            get: function() {
+                return this._shadowBlur || 0;
+            }
+        });
+        // set shadow blur
+        this.setShadowBlur = function(val) {
+            this.shadowBlur = val;
+            return this;
+        };
+        // shadow color
+        this.shadowColor = "rgba(0, 0, 0, 0)";
+        // set shadow color
+        this.setShadowColor = function(val) {
+            this.shadowColor = val;
+            return this;
+        };
+        // shadow offsetX
+        Object.defineProperty(this, "shadowOffsetX", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._shadowOffsetX = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("shadowOffsetX");
+                }
+            },
+            get: function() {
+                return this._shadowOffsetX || 0;
+            }
+        });
+        // set shadow offsetX
+        this.setShadowOffsetX = function(val) {
+            this.shadowOffsetX = val;
+            return this;
+        };
+        // shadow offsetY
+        Object.defineProperty(this, "shadowOffsetY", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._shadowOffsetY = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("shadowOffsetY");
+                }
+            },
+            get: function() {
+                return this._shadowOffsetY || 0;
+            }
+        });
+        // set shadow offsetY
+        this.setShadowOffsetY = function(val) {
+            this.shadowOffsetY = val;
+            return this;
+        };
+        // set shadow offset
+        this.setShadowOffset = function(x, y) {
+            return this.setShadowOffsetX(x).setShadowOffsetY(y);
+        };
+        // set shadow
+        this.setShadow = function(offsetX, offsetY, blur, color) {
+            return this.setShadowOffset(offsetX, offsetY).setShadowBlur(blur).setShadowColor(color);
+        };
         // translate
         this.translate = function(x = 0, y = 0) {
             return this.setOffsetX(x).setOffsetY(y);
@@ -270,6 +343,23 @@
                 return this;
             }
         };
+        // fill shape
+        this.fillWithShadow = function(ctx = OC.defaultContext) {
+            if (!ctx) {
+                throw new ObjectiveCanvasUndefinedError("ctx");
+            } else {
+                ctx.save();
+                this.fixedPath(ctx);
+                ctx.fillStyle = this.fillStyle;
+                ctx.shadowBlur = this.shadowBlur;
+                ctx.shadowColor = this.shadowColor;
+                ctx.shadowOffsetX = this.shadowOffsetX;
+                ctx.shadowOffsetY = this.shadowOffsetY;
+                ctx.fill();
+                ctx.restore();
+                return this;
+            }
+        };
         // stroke shape
         this.stroke = function(ctx = OC.defaultContext) {
             if (!ctx) {
@@ -281,6 +371,26 @@
                 ctx.lineWidth = this.lineWidth;
                 ctx.lineCap = this.lineCap;
                 ctx.lineJoin = this.lineJoin;
+                ctx.stroke();
+                ctx.restore();
+                return this;
+            }
+        };
+        // stroke shape
+        this.strokeWithShadow = function(ctx = OC.defaultContext) {
+            if (!ctx) {
+                throw new ObjectiveCanvasUndefinedError("ctx");
+            } else {
+                ctx.save();
+                this.fixedPath(ctx);
+                ctx.strokeStyle = this.strokeStyle;
+                ctx.lineWidth = this.lineWidth;
+                ctx.lineCap = this.lineCap;
+                ctx.lineJoin = this.lineJoin;
+                ctx.shadowBlur = this.shadowBlur;
+                ctx.shadowColor = this.shadowColor;
+                ctx.shadowOffsetX = this.shadowOffsetX;
+                ctx.shadowOffsetY = this.shadowOffsetY;
                 ctx.stroke();
                 ctx.restore();
                 return this;
