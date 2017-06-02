@@ -144,7 +144,7 @@
         // fixed path
         this.fixedPath = function(ctx = OC.defaultContext) {
             ctx.save();
-            ctx.translate(this.offsetX, this.offsetY);
+            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
             ctx.scale(this.scaleX, this.scaleY);
             ctx.rotate(this.rotateDeg);
             this.path(ctx);
