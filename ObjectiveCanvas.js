@@ -466,7 +466,7 @@
     };
 
     // star 
-    OC.Star = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0) {
+    OC.Star = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0, angleCount = 5) {
         // innerRadius
         Object.defineProperty(this, "innerRadius", {
             set: function(val) {
@@ -481,7 +481,7 @@
                 }
             },
             get: function() {
-                return this._innerRadius;
+                return this._innerRadius || 0;
             }
         });
         // set innerRadius
@@ -503,7 +503,7 @@
                 }
             },
             get: function() {
-                return this._outerRadius;
+                return this._outerRadius || 0;
             }
         });
         // set outerRadius
@@ -511,9 +511,31 @@
             this.outerRadius = val;
             return this;
         };
+        // angle count
+        Object.defineProperty(this, "angleCount", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    if (val < 2 || val % 1 !== 0) {
+                        throw new ObjectiveCanvasIllegalValueError("angleCount");
+                    } else {
+                        this._angleCount = val;
+                    }
+                } else {
+                    throw new ObjectiveCanvasTypeError("angleCount");
+                }
+            },
+            get: function() {
+                return this._angleCount || 5;
+            }
+        });
+        // set angle count
+        this.setAngleCount = function(val = 5) {
+            this.angleCount = val;
+            return this;
+        };
         // set size
-        this.setSize = function(innerRadius, outerRadius) {
-            return this.setInnerRadius(innerRadius).setOuterRadius(outerRadius);
+        this.setSize = function(innerRadius, outerRadius, angleCount = this.angleCount) {
+            return this.setInnerRadius(innerRadius).setOuterRadius(outerRadius).setAngleCount(angleCount);
         };
         // path
         this.path = function(ctx = OC.defaultContext) {
@@ -523,10 +545,12 @@
             var sin = Math.sin;
             var cos = Math.cos;
             var PI = Math.PI;
+            var count = this.angleCount;
+            var angle = 360 / count;
             ctx.moveTo(0, -R);
-            for (var i = 0; i < 5; i++) {
-                ctx.lineTo(r * sin((36 + i * 72) / 180 * PI), -r * cos((36 + i * 72) / 180 * PI));
-                ctx.lineTo(R * sin((72 + i * 72) / 180 * PI), -R * cos((72 + i * 72) / 180 * PI));
+            for (var i = 0; i < angleCount; i++) {
+                ctx.lineTo(r * sin((angle / 2 + i * angle) / 180 * PI), -r * cos((angle / 2 + i * angle) / 180 * PI));
+                ctx.lineTo(R * sin((angle + i * angle) / 180 * PI), -R * cos((angle + i * angle) / 180 * PI));
             }
             ctx.closePath();
             return this;
@@ -536,10 +560,11 @@
         this.y = y;
         this.innerRadius = innerRadius;
         this.outerRadius = outerRadius;
+        this.angleCount = angleCount;
     };
     OC.Star.prototype = new OC.Shape();
-    OC.Star.createNew = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0) {
-        return new this(x, y, innerRadius, outerRadius);
+    OC.Star.createNew = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0, angleCount = 5) {
+        return new this(x, y, innerRadius, outerRadius, angleCount);
     };
 
     // ------ //
