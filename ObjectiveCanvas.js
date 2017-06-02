@@ -40,7 +40,7 @@
     OC.defaultContext = null;
 
     // set default context
-    OC.setDefultContext = function(ctx) {
+    OC.setDefaultContext = function(ctx) {
         this.defaultContext = ctx;
         return this;
     };
@@ -91,18 +91,6 @@
         this.setPos = function(x, y) {
             return this.setX(x).setY(y);
         };
-        // translate
-        this.translate = function(x = 0, y = 0) {
-            if (typeof x !== "number") {
-                throw new ObjectiveCanvasTypeError("x");
-            } else if (typeof y !== "number") {
-                throw new ObjectiveCanvasTypeError("y");
-            } else {
-                this.x += x;
-                this.y += y;
-                return this;
-            }
-        };
         // fillStyle
         this.fillStyle = "#000000";
         // set fillStyle
@@ -127,7 +115,7 @@
                 }
             },
             get: function() {
-                return this._lineWidth;
+                return this._lineWidth || 1;
             }
         });
         // set lineWidth
@@ -153,10 +141,116 @@
         this.path = function(ctx = OC.defaultContext) {
             throw new ObjectiveCanvasUndefinedError("path");
         };
+        // fixed path
+        this.fixedPath = function(ctx = OC.defaultContext) {
+            ctx.save();
+            ctx.translate(this.offsetX, this.offsetY);
+            ctx.scale(this.scaleX, this.scaleY);
+            ctx.rotate(this.rotateDeg);
+            this.path(ctx);
+            ctx.restore();
+        };
+        // offsetX
+        Object.defineProperty(this, "offsetX", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._offsetX = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("offsetX");
+                }
+            },
+            get: function() {
+                return this._offsetX || 0;
+            }
+        });
+        // set offsetX
+        this.setOffsetX = function(val) {
+            this.offsetX = val;
+            return this;
+        };
+        // offsetY
+        Object.defineProperty(this, "offsetY", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._offsetY = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("offsetY");
+                }
+            },
+            get: function() {
+                return this._offsetY || 0;
+            }
+        });
+        this.setOffsetY = function(val) {
+            this.offsetY = val;
+            return this;
+        };
+        // translate
+        this.translate = function(x = 0, y = 0) {
+            return this.setOffsetX(x).setOffsetY(y);
+        };
+        // scaleX
+        Object.defineProperty(this, "scaleX", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._scaleX = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("scaleX");
+                }
+            },
+            get: function() {
+                return this._scaleX;
+            }
+        });
+        // set scaleX
+        this.setScaleX = function(val) {
+            this.scaleX = val;
+            return this;
+        };
+        // scaleY
+        Object.defineProperty(this, "scaleY", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._scaleY = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("scaleY");
+                }
+            },
+            get: function() {
+                return this._scaleY;
+            }
+        });
+        // set scaleY
+        this.setScaleY = function(val) {
+            this.scaleY = val;
+            return this;
+        };
+        // scale
+        this.scale = function(x = 1, y = x) {
+            return this.setScaleX(x).setScaleY(y);
+        };
+        // rotateDeg
+        Object.defineProperty(this, "rotateDeg", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._rotateDeg = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("rotateDeg");
+                }
+            },
+            get: function() {
+                return this._rotateDeg;
+            }
+        });
+        // rotate
+        this.rotate = function(deg) {
+            this.rotateDeg = deg;
+            return this;
+        };
         // fill shape
         this.fill = function(ctx = OC.defaultContext) {
             ctx.save();
-            this.path(ctx);
+            this.fixedPath(ctx);
             ctx.fillStyle = this.fillStyle;
             ctx.fill();
             ctx.restore();
@@ -165,7 +259,7 @@
         // stroke shape
         this.stroke = function(ctx = OC.defaultContext) {
             ctx.save();
-            this.path(ctx);
+            this.fixedPath(ctx);
             ctx.strokeStyle = this.strokeStyle;
             ctx.lineWidth = this.lineWidth;
             ctx.lineCap = this.lineCap;
@@ -209,7 +303,11 @@
         // h
         Object.defineProperty(this, "h", {
             set: function(val) {
-                this._h = val;
+                if (typeof val === "number") {
+                    this._h = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("h");
+                }
             },
             get: function() {
                 return this._h || 0;
@@ -224,20 +322,10 @@
         this.setSize = function(w, h) {
             return this.setW(w).setH(h);
         };
-        // scale
-        this.scale = function(val) {
-            if (typeof val == "number") {
-                this.w *= val;
-                this.h *= val;
-                return this;
-            } else {
-                throw new ObjectiveCanvasTypeError("val");
-            }
-        };
         // path
         this.path = function(ctx = OC.defaultContext) {
             ctx.beginPath();
-            ctx.rect(this.x, this.y, this.w, this.h);
+            ctx.rect(0, 0, this.w, this.h);
             ctx.closePath();
         };
         // init
@@ -271,38 +359,25 @@
             this.r = val;
             return this;
         };
-        // scale
-        this.scale = function(val) {
-            if (typeof val === "number") {
-                this.w *= val;
-                this.h *= val;
-                this.r *= val;
-                return this;
-            } else {
-                throw new ObjectiveCanvasTypeError("val");
-            }
-        };
         // set size
         this.setSize = function(w, h, r) {
             return this.setW(w).setH(h).setR(r);
         };
         // path
         this.path = function(ctx = OC.defaultContext) {
-            var x = this.x;
-            var y = this.y;
             var w = this.w;
             var h = this.h;
             var r = this.r;
             ctx.beginPath();
-            ctx.moveTo(x + r, y);
-            ctx.lineTo(x + w - r, y);
-            ctx.arcTo(x + w, y, x + w, y + r, r);
-            ctx.lineTo(x + w, y + h - r);
-            ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-            ctx.lineTo(x + r, y + h);
-            ctx.arcTo(x, y + h, x, y + h - r, r);
-            ctx.lineTo(x, y + r);
-            ctx.arcTo(x, y, x + r, y, r);
+            ctx.moveTo(r, 0);
+            ctx.lineTo(w - r, 0);
+            ctx.arcTo(w, 0, w, r, r);
+            ctx.lineTo(w, h - r);
+            ctx.arcTo(w, h, w - r, h, r);
+            ctx.lineTo(r, h);
+            ctx.arcTo(0, h, 0, h - r, r);
+            ctx.lineTo(0, r);
+            ctx.arcTo(0, 0, r, 0, r);
             ctx.closePath();
         };
         // init
@@ -337,19 +412,10 @@
             this.r = val;
             return this;
         };
-        // scale
-        this.scale = function(val = 1) {
-            if (typeof val === "number") {
-                this.r *= val;
-                return this;
-            } else {
-                throw new ObjectiveCanvasTypeError("val");
-            }
-        };
         // path
         this.path = function(ctx = OC.defaultContext) {
             ctx.beginPath()
-            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.arc(0, 0, this.r, 0, Math.PI * 2);
             ctx.closePath()
         };
         // init
