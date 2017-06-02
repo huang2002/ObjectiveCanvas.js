@@ -5,7 +5,7 @@
 (function() {
 
     // load error
-    if (window.ObjectiveCanvas) {
+    if (window.OC) {
         console.warn("Double load?");
         return;
     }
