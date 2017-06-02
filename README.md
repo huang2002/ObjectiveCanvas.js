@@ -20,13 +20,13 @@ OC.Circle.createNew(100, 100, 50).setFillStyle("#FF0000").fill(ctx);
 In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective way. 
 
 ## What's in it ?
-### Some constructors
+### Some constructors:
 * Shape
 * Rect
 * RoundRect
 * Circle
 * ......
-### Some methods
+### Some methods:
 * setLineCap(lineCap)
 * setLineJoin(lineJoin)
 * setLineWidth(width)
