@@ -294,8 +294,8 @@
         this.x = x;
         this.y = y;
     };
-    OC.Shape.createNew = function() {
-        return new this();
+    OC.Shape.createNew = function(x = 0, y = 0) {
+        return new this(x, y);
     };
 
     // rect
