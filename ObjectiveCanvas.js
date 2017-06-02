@@ -22,7 +22,7 @@
 
     // UndefinedError
     function ObjectiveCanvasUndefinedError(method) {
-        this.message = method + "() has not been defined!";
+        this.message = method + " has not been defined!";
     }
     ObjectiveCanvasUndefinedError.prototype = new Error();
 
@@ -249,24 +249,32 @@
         };
         // fill shape
         this.fill = function(ctx = OC.defaultContext) {
-            ctx.save();
-            this.fixedPath(ctx);
-            ctx.fillStyle = this.fillStyle;
-            ctx.fill();
-            ctx.restore();
-            return this;
+            if (!ctx) {
+                throw new ObjectiveCanvasUndefinedError("ctx");
+            } else {
+                ctx.save();
+                this.fixedPath(ctx);
+                ctx.fillStyle = this.fillStyle;
+                ctx.fill();
+                ctx.restore();
+                return this;
+            }
         };
         // stroke shape
         this.stroke = function(ctx = OC.defaultContext) {
-            ctx.save();
-            this.fixedPath(ctx);
-            ctx.strokeStyle = this.strokeStyle;
-            ctx.lineWidth = this.lineWidth;
-            ctx.lineCap = this.lineCap;
-            ctx.lineJoin = this.lineJoin;
-            ctx.stroke();
-            ctx.restore();
-            return this;
+            if (!ctx) {
+                throw new ObjectiveCanvasUndefinedError("ctx");
+            } else {
+                ctx.save();
+                this.fixedPath(ctx);
+                ctx.strokeStyle = this.strokeStyle;
+                ctx.lineWidth = this.lineWidth;
+                ctx.lineCap = this.lineCap;
+                ctx.lineJoin = this.lineJoin;
+                ctx.stroke();
+                ctx.restore();
+                return this;
+            }
         };
         // draw shape
         this.draw = function(ctx = OC.defaultContext) {
