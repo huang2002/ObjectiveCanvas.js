@@ -6,7 +6,7 @@
 
     // load error
     if (window.OC) {
-        console.warn("Double load?");
+        // double load ?
         return;
     }
 
