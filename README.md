@@ -20,6 +20,7 @@ OC.Circle.createNew(100, 100, 50).setFillStyle("#FF0000").fill(ctx);
 In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective way. 
 
 ## What's in it ?
+Some constructors are under the main object(OC).
 ### Some constructors:
 * Shape
 * Rect
@@ -27,22 +28,43 @@ In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective w
 * Circle
 * Star
 * ......
-### Some methods:
-* setOpacity(val)
-* setShadow(offsetX, offsetY, blur, color)
-* setLineCap(lineCap)
-* setLineJoin(lineJoin)
-* setLineWidth(width)
-* setStrokeStyle(style)
-* stroke(ctx?)
-* setFillStyle(style)
-* fill(ctx?)
-* translate(x, y)
-* scale(x, y)
-* rotate(deg)
+
+## What can I do with them ?
+You can create objects and set properties of them.
+### Some properties:
+* fillStyle
+* lineCap
+* lineJoin
+* lineWidth
+* offsetX
+* offsetY
+* opacity
+* rotateDeg
+* scaleX
+* scaleY
+* shadowBlur
+* shadowColor
+* shadowOffsetX
+* shadowOffsetY
+* strokeStyle
+* x
+* y
+* ......
+
+Also, you can set properties by methods, such as `setFillStyle(style)`. Besides, some properties can be set together by one method, for example, `setPos(x, y)`, `setShadow(offsetX, offsetY, blur, color)` and so on. What's more, some methods enable you to change properties instead of setting them:
+```
+Circle.offsetX; // 0
+Circle.offsetY; // 0
+Circle.translate(50, 50);
+Circle.offsetX; // 50
+Circle.offsetY; // 50
+Circle.translate(100, -50);
+Circle.offsetX; // 150
+Circle.offsetY; // 0
+```
 
 ## Advice
-Last but not least, I suggest you have a look personally.
+Last but not least, I suggest you have a look personally. This will let you know more about it.
 
 ## End
 Thanks for your spending time looking at this document.

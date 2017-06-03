@@ -291,9 +291,15 @@
             this.offsetY = val;
             return this;
         };
-        // translate
-        this.translate = function(x = 0, y = 0) {
+        // set offset
+        this.setOffset = function(x = 0, y = x) {
             return this.setOffsetX(x).setOffsetY(y);
+        };
+        // translate
+        this.translate = function(x = 0, y = x) {
+            this.offsetX += x;
+            this.offsetY += y;
+            return this;
         };
         // scaleX
         Object.defineProperty(this, "scaleX", {
@@ -305,7 +311,7 @@
                 }
             },
             get: function() {
-                return this._scaleX;
+                return this._scaleX || 1;
             }
         });
         // set scaleX
@@ -323,7 +329,7 @@
                 }
             },
             get: function() {
-                return this._scaleY;
+                return this._scaleY || 1;
             }
         });
         // set scaleY
@@ -331,9 +337,15 @@
             this.scaleY = val;
             return this;
         };
+        // set scale
+        this.setScale = function(x = 1, y = x) {
+            return this.setScaleX(x).setScaleY(y);
+        };
         // scale
         this.scale = function(x = 1, y = x) {
-            return this.setScaleX(x).setScaleY(y);
+            this.scaleX *= x;
+            this.scaleY *= y;
+            return this;
         };
         // rotateDeg
         Object.defineProperty(this, "rotateDeg", {
@@ -348,9 +360,14 @@
                 return this._rotateDeg;
             }
         });
-        // rotate
-        this.rotate = function(deg) {
+        // set rotateDeg
+        this.setRotate = function(deg = 0) {
             this.rotateDeg = deg;
+            return this;
+        };
+        // rotate
+        this.rotate = function(deg = 0) {
+            this.rotateDeg += deg;
             return this;
         };
         // fill shape
