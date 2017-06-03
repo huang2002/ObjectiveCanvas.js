@@ -22,11 +22,14 @@ In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective w
 ## What's in it ?
 Some constructors are under the main object(OC).
 ### Some constructors:
+* Object
 * Shape
 * Rect
 * RoundRect
 * Circle
 * Star
+* Line
+* Polygon
 * ......
 
 ## What can I do with them ?

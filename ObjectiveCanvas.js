@@ -55,48 +55,8 @@
     // define constructor //
     // ------------------ //
 
-    // basic shape
-    OC.Shape = function(x = 0, y = 0) {
-        // x
-        Object.defineProperty(this, 'x', {
-            set: function(val) {
-                if (typeof val === "number") {
-                    this._x = val;
-                } else {
-                    throw new ObjectiveCanvasTypeError('x');
-                }
-            },
-            get: function() {
-                return this._x || 0;
-            }
-        });
-        // set x
-        this.setX = function(val) {
-            this.x = val;
-            return this;
-        };
-        // y
-        Object.defineProperty(this, 'y', {
-            set: function(val) {
-                if (typeof val === "number") {
-                    this._y = val;
-                } else {
-                    throw new ObjectiveCanvasTypeError('y');
-                }
-            },
-            get: function() {
-                return this._y || 0;
-            }
-        });
-        // set y
-        this.setY = function(val) {
-            this.y = val;
-            return this;
-        };
-        // set pos
-        this.setPos = function(x, y) {
-            return this.setX(x).setY(y);
-        };
+    // object
+    OC.Object = function() {
         // fillStyle
         this.fillStyle = "#000000";
         // set fillStyle
@@ -146,19 +106,6 @@
         this.setLineJoin = function(val) {
             this.lineJoin = val;
             return this;
-        };
-        // path
-        this.path = function(ctx = OC.defaultContext) {
-            throw new ObjectiveCanvasUndefinedError("path");
-        };
-        // fixed path
-        this.fixedPath = function(ctx = OC.defaultContext) {
-            ctx.save();
-            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
-            ctx.scale(this.scaleX, this.scaleY);
-            ctx.rotate(this.rotateDeg / 180 * Math.PI);
-            this.path(ctx);
-            ctx.restore();
         };
         // shadow blur
         Object.defineProperty(this, "shadowBlur", {
@@ -370,6 +317,20 @@
             this.rotateDeg += deg;
             return this;
         };
+        // path
+        this.path = function(ctx = OC.defaultContext) {
+            throw new ObjectiveCanvasUndefinedError("path");
+        };
+        // fixed path
+        this.fixedPath = function(ctx = OC.defaultContext) {
+            ctx.save();
+            ctx.translate(this.offsetX, this.offsetY);
+            ctx.scale(this.scaleX, this.scaleY);
+            ctx.rotate(this.rotateDeg / 180 * Math.PI);
+            this.path(ctx);
+            ctx.restore();
+            return this;
+        };
         // fill shape
         this.fill = function(ctx = OC.defaultContext) {
             if (!ctx) {
@@ -430,6 +391,63 @@
         this.draw = function(ctx = OC.defaultContext) {
             return this.fill(ctx).stroke(ctx);
         };
+    };
+    OC.Object.createNew = function() {
+        return new this();
+    };
+
+    // shape
+    OC.Shape = function(x = 0, y = 0) {
+        // x
+        Object.defineProperty(this, 'x', {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._x = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError('x');
+                }
+            },
+            get: function() {
+                return this._x || 0;
+            }
+        });
+        // set x
+        this.setX = function(val) {
+            this.x = val;
+            return this;
+        };
+        // y
+        Object.defineProperty(this, 'y', {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._y = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError('y');
+                }
+            },
+            get: function() {
+                return this._y || 0;
+            }
+        });
+        // set y
+        this.setY = function(val) {
+            this.y = val;
+            return this;
+        };
+        // set pos
+        this.setPos = function(x, y) {
+            return this.setX(x).setY(y);
+        };
+        // fixed path
+        this.fixedPath = function(ctx = OC.defaultContext) {
+            ctx.save();
+            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
+            ctx.scale(this.scaleX, this.scaleY);
+            ctx.rotate(this.rotateDeg / 180 * Math.PI);
+            this.path(ctx);
+            ctx.restore();
+            return this;
+        };
         // init
         this.x = x;
         this.y = y;
@@ -437,6 +455,7 @@
     OC.Shape.createNew = function(x = 0, y = 0) {
         return new this(x, y);
     };
+    OC.Shape.prototype = new OC.Object();
 
     // rect
     OC.Rect = function(x = 0, y = 0, w = 0, h = 0) {
@@ -536,6 +555,8 @@
         };
         // path
         this.path = function(ctx = OC.defaultContext) {
+            var x = this.x;
+            var y = this.y;
             var w = this.w;
             var h = this.h;
             var r = Math.max(Math.min(this.r, Math.min(w, h) / 2), 0);
@@ -687,7 +708,7 @@
             var PI = Math.PI;
             var count = this.angleCount;
             var angle = 360 / count;
-            ctx.moveTo(0, -R);
+            ctx.moveTo(x, y - R);
             for (var i = 0; i < angleCount; i++) {
                 ctx.lineTo(r * sin((angle / 2 + i * angle) / 180 * PI), -r * cos((angle / 2 + i * angle) / 180 * PI));
                 ctx.lineTo(R * sin((angle + i * angle) / 180 * PI), -R * cos((angle + i * angle) / 180 * PI));
@@ -705,6 +726,158 @@
     OC.Star.prototype = new OC.Shape();
     OC.Star.createNew = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0, angleCount = 5) {
         return new this(x, y, innerRadius, outerRadius, angleCount);
+    };
+
+    // line
+    OC.Line = function(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
+        // x1, y1, x2, y2
+        ["x1", "y1", "x2", "y2"].forEach(p => {
+            Object.defineProperty(this, p, {
+                set: function(val) {
+                    this['_' + p] = val;
+                },
+                get: function() {
+                    return this['_' + p];
+                }
+            });
+        });
+        // path
+        this.path = function(ctx = OC.defaultContext) {
+            ctx.moveTo(this.x1, this.y1);
+            ctx.lineTo(this.x2, this.y2);
+        };
+        // init
+        this.x1 = x1;
+        this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
+    };
+    OC.Line.prototype = new OC.Object();
+    OC.Line.createNew = function(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
+        return new this(x1, y1, x2, y2);
+    };
+
+    // polygon
+    OC.Polygon = function(...points) {
+        // points
+        Object.defineProperty(this, "points", {
+            set: function(arr) {
+                if (arr instanceof Array) {
+                    arr.forEach(p => {
+                        if (typeof p.x !== "number" || typeof p.y !== "number") {
+                            throw new ObjectiveCanvasIllegalValueError("points");
+                        }
+                    });
+                    this._points = p;
+                } else {
+                    throw new ObjectiveCanvasTypeError("points");
+                }
+            },
+            get: function() {
+                return this._points;
+            }
+        });
+        // set point
+        this.setPoint = function(index = this.points.length - 1, x = null, y = null) {
+            if (typeof index === "number") {
+                if (index >= 0 && index <= this.points.length) {
+                    if (typeof x === "number") {
+                        if (typeof y === "number") {
+                            this.points[index].x = x;
+                            this.points[index].y = y;
+                        } else {
+                            throw new ObjectiveCanvasUndefinedError("y");
+                        }
+                    } else {
+                        this.removePoint(index);
+                    }
+                    return this;
+                } else {
+                    throw new ObjectiveCanvasIllegalValueError("index");
+                }
+            } else {
+                throw new ObjectiveCanvasUndefinedError("index");
+            }
+        };
+        // add point
+        this.addPoint = function(x, y, index = this.points.length) {
+            if (typeof x === "number") {
+                if (typeof y === "number") {
+                    if (typeof index === "number") {
+                        var len = this.points.length;
+                        if (index >= 0 && index <= len) {
+                            if (index === len) {
+                                this.points.push({ x, y });
+                            } else {
+                                this.points.splice(index, 0, { x, y });
+                            }
+                            return this;
+                        } else {
+                            throw new ObjectiveCanvasIllegalValueError("index");
+                        }
+                    } else {
+                        throw new ObjectiveCanvasTypeError("index");
+                    }
+                } else {
+                    throw new ObjectiveCanvasTypeError("y");
+                }
+            } else {
+                throw new ObjectiveCanvasTypeError("x");
+            }
+        };
+        // remove point
+        this.removePoint = function(index = this.points.length - 1) {
+            if (typeof index === "number") {
+                if (index >= 0 && index < this.points.length) {
+                    this.points.splice(index, 1);
+                    return this;
+                } else {
+                    throw new ObjectiveCanvasIllegalValueError("index");
+                }
+            } else {
+                throw new ObjectiveCanvasTypeError("index");
+            }
+        };
+        // clear points
+        this.clearPoints = function() {
+            this.points.length = 0;
+            return this;
+        };
+        // path
+        this.path = function(ctx = OC.defaultContext) {
+            ctx.beginPath();
+            this.points.forEach((p, i) => {
+                if (i === 0) {
+                    ctx.moveTo(p.x, p.y);
+                } else {
+                    ctx.lineTo(p.x, p.y);
+                }
+            });
+            ctx.closePath();
+            return this;
+        };
+        // init
+        points = points[0];
+        if (points instanceof Array) {
+            var p = new Array();
+            var len = Math.floor(points.length / 2);
+            for (var i = 0; i < len; i++) {
+                let x = points[i * 2];
+                let y = points[i * 2 + 1];
+                if (typeof x === "number" || typeof y === "number") {
+                    p.push({ x, y });
+                } else {
+                    throw new ObjectiveCanvasIllegalValueError("points");
+                }
+            }
+            this.points = p;
+        } else {
+            throw new ObjectiveCanvasTypeError("points");
+        }
+    };
+    OC.Polygon.prototype = new OC.Object();
+    OC.Polygon.createNew = function(...points) {
+        return new this(points);
     };
 
     // ------ //
