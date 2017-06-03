@@ -28,6 +28,8 @@ In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective w
 * Star
 * ......
 ### Some methods:
+* setOpacity(val)
+* setShadow(offsetX, offsetY, blur, color)
 * setLineCap(lineCap)
 * setLineJoin(lineJoin)
 * setLineWidth(width)
@@ -41,7 +43,6 @@ In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective w
 
 ## Advice
 Last but not least, I suggest you have a look personally.
-
 
 ## End
 Thanks for your spending time looking at this document.

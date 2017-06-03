@@ -160,41 +160,6 @@
             this.path(ctx);
             ctx.restore();
         };
-        // offsetX
-        Object.defineProperty(this, "offsetX", {
-            set: function(val) {
-                if (typeof val === "number") {
-                    this._offsetX = val;
-                } else {
-                    throw new ObjectiveCanvasTypeError("offsetX");
-                }
-            },
-            get: function() {
-                return this._offsetX || 0;
-            }
-        });
-        // set offsetX
-        this.setOffsetX = function(val) {
-            this.offsetX = val;
-            return this;
-        };
-        // offsetY
-        Object.defineProperty(this, "offsetY", {
-            set: function(val) {
-                if (typeof val === "number") {
-                    this._offsetY = val;
-                } else {
-                    throw new ObjectiveCanvasTypeError("offsetY");
-                }
-            },
-            get: function() {
-                return this._offsetY || 0;
-            }
-        });
-        this.setOffsetY = function(val) {
-            this.offsetY = val;
-            return this;
-        };
         // shadow blur
         Object.defineProperty(this, "shadowBlur", {
             set: function(val) {
@@ -220,7 +185,7 @@
         // shadow color
         this.shadowColor = "rgba(0, 0, 0, 0)";
         // set shadow color
-        this.setShadowColor = function(val) {
+        this.setShadowColor = function(val = "rgba(0, 0, 0, 0)") {
             this.shadowColor = val;
             return this;
         };
@@ -261,12 +226,70 @@
             return this;
         };
         // set shadow offset
-        this.setShadowOffset = function(x, y) {
+        this.setShadowOffset = function(x, y = x) {
             return this.setShadowOffsetX(x).setShadowOffsetY(y);
         };
         // set shadow
         this.setShadow = function(offsetX, offsetY, blur, color) {
             return this.setShadowOffset(offsetX, offsetY).setShadowBlur(blur).setShadowColor(color);
+        };
+        // opacity
+        Object.defineProperty(this, "opacity", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    if (val < 0 || val > 1) {
+                        throw new ObjectiveCanvasIllegalValueError("opacity");
+                    } else {
+                        this._opacity = val;
+                    }
+                } else {
+                    throw new ObjectiveCanvasTypeError("opacity");
+                }
+            },
+            get: function() {
+                return this._opacity;
+            }
+        });
+        // set opacity
+        this.setOpacity = function(val) {
+            this.opacity = val;
+            return this;
+        };
+        // offsetX
+        Object.defineProperty(this, "offsetX", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._offsetX = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("offsetX");
+                }
+            },
+            get: function() {
+                return this._offsetX || 0;
+            }
+        });
+        // set offsetX
+        this.setOffsetX = function(val) {
+            this.offsetX = val;
+            return this;
+        };
+        // offsetY
+        Object.defineProperty(this, "offsetY", {
+            set: function(val) {
+                if (typeof val === "number") {
+                    this._offsetY = val;
+                } else {
+                    throw new ObjectiveCanvasTypeError("offsetY");
+                }
+            },
+            get: function() {
+                return this._offsetY || 0;
+            }
+        });
+        // set offsetY
+        this.setOffsetY = function(val) {
+            this.offsetY = val;
+            return this;
         };
         // translate
         this.translate = function(x = 0, y = 0) {
@@ -337,19 +360,7 @@
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
-                ctx.fillStyle = this.fillStyle;
-                ctx.fill();
-                ctx.restore();
-                return this;
-            }
-        };
-        // fill shape
-        this.fillWithShadow = function(ctx = OC.defaultContext) {
-            if (!ctx) {
-                throw new ObjectiveCanvasUndefinedError("ctx");
-            } else {
-                ctx.save();
-                this.fixedPath(ctx);
+                ctx.globalAlpha = this.opacity;
                 ctx.fillStyle = this.fillStyle;
                 ctx.shadowBlur = this.shadowBlur;
                 ctx.shadowColor = this.shadowColor;
@@ -367,6 +378,7 @@
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
+                ctx.globalAlpha = this.opacity;
                 ctx.strokeStyle = this.strokeStyle;
                 ctx.lineWidth = this.lineWidth;
                 ctx.lineCap = this.lineCap;
@@ -383,6 +395,7 @@
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
+                ctx.globalAlpha = this.opacity;
                 ctx.strokeStyle = this.strokeStyle;
                 ctx.lineWidth = this.lineWidth;
                 ctx.lineCap = this.lineCap;
