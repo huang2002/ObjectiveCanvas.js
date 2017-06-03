@@ -33,7 +33,7 @@ Some constructors are under the main object(OC).
 * ......
 
 ## What can I do with them ?
-You can create objects and set properties of them.
+You can create objects and set properties of them. Then, draw them on &lt;canvas&gt;.
 ### Some properties:
 * fillStyle
 * lineCap
