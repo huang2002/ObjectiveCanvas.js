@@ -16,24 +16,24 @@
 
     // TypeError
     function ObjectiveCanvasTypeError(property) {
-        Error.call(this, "Error type for '" + property + "'!");
+        return new Error("Error type for '" + property + "'!");
     }
 
     // UndefinedError
     function ObjectiveCanvasUndefinedError(property) {
-        Error.call(this, property + " has not been defined!");
+        return new Error(property + " has not been defined!");
     }
 
     // IllegalValueError
     function ObjectiveCanvasIllegalValueError(property) {
-        Error.call(this, "Illegal value for '" + property + "'!");
+        return new Error("Illegal value for '" + property + "'!");
     }
 
     // --------- //
     // container //
     // --------- //
 
-    var OC = new Object();
+    var OC = Object();
 
     // ------------- //
     // define method //
@@ -73,12 +73,12 @@
             set: function(val) {
                 if (typeof val === "number") {
                     if (val < 0) {
-                        throw new ObjectiveCanvasIllegalValueError("lineWidth");
+                        throw ObjectiveCanvasIllegalValueError("lineWidth");
                     } else {
                         this._lineWidth = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("lineWidth");
+                    throw ObjectiveCanvasTypeError("lineWidth");
                 }
             },
             get: function() {
@@ -90,31 +90,17 @@
             this.lineWidth = val;
             return this;
         };
-        // lineCap
-        this.lineCap = "butt";
-        // set lineCap
-        this.setLineCap = function(val) {
-            this.lineCap = val;
-            return this;
-        };
-        // lineJoin
-        this.lineJoin = "miter";
-        // set lineJoin
-        this.setLineJoin = function(val) {
-            this.lineJoin = val;
-            return this;
-        };
         // shadow blur
         Object.defineProperty(this, "shadowBlur", {
             set: function(val) {
                 if (typeof val === "number") {
                     if (val < 0) {
-                        throw new ObjectiveCanvasIllegalValueError("shadowBlur");
+                        throw ObjectiveCanvasIllegalValueError("shadowBlur");
                     } else {
                         this._shadowBlur = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("shadowBlur");
+                    throw ObjectiveCanvasTypeError("shadowBlur");
                 }
             },
             get: function() {
@@ -139,7 +125,7 @@
                 if (typeof val === "number") {
                     this._shadowOffsetX = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError("shadowOffsetX");
+                    throw ObjectiveCanvasTypeError("shadowOffsetX");
                 }
             },
             get: function() {
@@ -157,7 +143,7 @@
                 if (typeof val === "number") {
                     this._shadowOffsetY = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError("shadowOffsetY");
+                    throw ObjectiveCanvasTypeError("shadowOffsetY");
                 }
             },
             get: function() {
@@ -182,12 +168,12 @@
             set: function(val) {
                 if (typeof val === "number") {
                     if (val < 0 || val > 1) {
-                        throw new ObjectiveCanvasIllegalValueError("opacity");
+                        throw ObjectiveCanvasIllegalValueError("opacity");
                     } else {
                         this._opacity = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("opacity");
+                    throw ObjectiveCanvasTypeError("opacity");
                 }
             },
             get: function() {
@@ -205,7 +191,7 @@
                 if (typeof val === "number") {
                     this._offsetX = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError("offsetX");
+                    throw ObjectiveCanvasTypeError("offsetX");
                 }
             },
             get: function() {
@@ -223,7 +209,7 @@
                 if (typeof val === "number") {
                     this._offsetY = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError("offsetY");
+                    throw ObjectiveCanvasTypeError("offsetY");
                 }
             },
             get: function() {
@@ -251,7 +237,7 @@
                 if (typeof val === "number") {
                     this._scaleX = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError("scaleX");
+                    throw ObjectiveCanvasTypeError("scaleX");
                 }
             },
             get: function() {
@@ -269,7 +255,7 @@
                 if (typeof val === "number") {
                     this._scaleY = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError("scaleY");
+                    throw ObjectiveCanvasTypeError("scaleY");
                 }
             },
             get: function() {
@@ -297,7 +283,7 @@
                 if (typeof val === "number") {
                     this._rotateDeg = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError("rotateDeg");
+                    throw ObjectiveCanvasTypeError("rotateDeg");
                 }
             },
             get: function() {
@@ -316,7 +302,7 @@
         };
         // path
         this.path = function(ctx = OC.defaultContext) {
-            throw new ObjectiveCanvasUndefinedError("path");
+            throw ObjectiveCanvasUndefinedError("path");
         };
         // fixed path
         this.fixedPath = function(ctx = OC.defaultContext) {
@@ -331,7 +317,7 @@
         // fill shape
         this.fill = function(ctx = OC.defaultContext) {
             if (!ctx) {
-                throw new ObjectiveCanvasUndefinedError("ctx");
+                throw ObjectiveCanvasUndefinedError("ctx");
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
@@ -349,7 +335,7 @@
         // stroke shape
         this.stroke = function(ctx = OC.defaultContext) {
             if (!ctx) {
-                throw new ObjectiveCanvasUndefinedError("ctx");
+                throw ObjectiveCanvasUndefinedError("ctx");
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
@@ -366,7 +352,7 @@
         // stroke shape
         this.strokeWithShadow = function(ctx = OC.defaultContext) {
             if (!ctx) {
-                throw new ObjectiveCanvasUndefinedError("ctx");
+                throw ObjectiveCanvasUndefinedError("ctx");
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
@@ -403,7 +389,7 @@
                 if (typeof val === "number") {
                     this._x = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError('x');
+                    throw ObjectiveCanvasTypeError('x');
                 }
             },
             get: function() {
@@ -421,7 +407,7 @@
                 if (typeof val === "number") {
                     this._y = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError('y');
+                    throw ObjectiveCanvasTypeError('y');
                 }
             },
             get: function() {
@@ -464,12 +450,12 @@
             set: function(val) {
                 if (typeof val === "number") {
                     if (val < 0) {
-                        throw new ObjectiveCanvasIllegalValueError("w");
+                        throw ObjectiveCanvasIllegalValueError("w");
                     } else {
                         this._w = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("w");
+                    throw ObjectiveCanvasTypeError("w");
                 }
             },
             get: function() {
@@ -486,12 +472,12 @@
             set: function(val) {
                 if (typeof val === "number") {
                     if (val < 0) {
-                        throw new ObjectiveCanvasIllegalValueError("h");
+                        throw ObjectiveCanvasIllegalValueError("h");
                     } else {
                         this._h = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("h");
+                    throw ObjectiveCanvasTypeError("h");
                 }
             },
             get: function() {
@@ -532,7 +518,7 @@
                 if (typeof val === "number") {
                     this._r = val;
                 } else {
-                    throw new ObjectiveCanvasTypeError("r");
+                    throw ObjectiveCanvasTypeError("r");
                 }
             },
             get: function() {
@@ -588,12 +574,12 @@
             set: function(val) {
                 if (typeof r === "number") {
                     if (val < 0) {
-                        throw new ObjectiveCanvasIllegalValueError("r");
+                        throw ObjectiveCanvasIllegalValueError("r");
                     } else {
                         this._r = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError('r');
+                    throw ObjectiveCanvasTypeError('r');
                 }
             },
             get: function() {
@@ -628,12 +614,12 @@
             set: function(val) {
                 if (typeof val === "number") {
                     if (val < 0) {
-                        throw new ObjectiveCanvasIllegalValueError("innerRadius");
+                        throw ObjectiveCanvasIllegalValueError("innerRadius");
                     } else {
                         this._innerRadius = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("innerRadius");
+                    throw ObjectiveCanvasTypeError("innerRadius");
                 }
             },
             get: function() {
@@ -650,12 +636,12 @@
             set: function(val) {
                 if (typeof val === "number") {
                     if (val < 0) {
-                        throw new ObjectiveCanvasIllegalValueError("outerRadius");
+                        throw ObjectiveCanvasIllegalValueError("outerRadius");
                     } else {
                         this._outerRadius = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("outerRadius");
+                    throw ObjectiveCanvasTypeError("outerRadius");
                 }
             },
             get: function() {
@@ -672,12 +658,12 @@
             set: function(val) {
                 if (typeof val === "number") {
                     if (val < 2 || val % 1 !== 0) {
-                        throw new ObjectiveCanvasIllegalValueError("angleCount");
+                        throw ObjectiveCanvasIllegalValueError("angleCount");
                     } else {
                         this._angleCount = val;
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("angleCount");
+                    throw ObjectiveCanvasTypeError("angleCount");
                 }
             },
             get: function() {
@@ -735,6 +721,20 @@
                 }
             });
         });
+        // lineCap
+        this.lineCap = "butt";
+        // set lineCap
+        this.setLineCap = function(val) {
+            this.lineCap = val;
+            return this;
+        };
+        // lineJoin
+        this.lineJoin = "miter";
+        // set lineJoin
+        this.setLineJoin = function(val) {
+            this.lineJoin = val;
+            return this;
+        };
         // path
         this.path = function(ctx = OC.defaultContext) {
             ctx.moveTo(this.x1, this.y1);
@@ -760,12 +760,12 @@
                 if (arr instanceof Array) {
                     arr.forEach(p => {
                         if (typeof p.x !== "number" || typeof p.y !== "number") {
-                            throw new ObjectiveCanvasIllegalValueError("points");
+                            throw ObjectiveCanvasIllegalValueError("points");
                         }
                     });
                     this._points = p;
                 } else {
-                    throw new ObjectiveCanvasTypeError("points");
+                    throw ObjectiveCanvasTypeError("points");
                 }
             },
             get: function() {
@@ -781,17 +781,17 @@
                             this.points[index].x = x;
                             this.points[index].y = y;
                         } else {
-                            throw new ObjectiveCanvasUndefinedError("y");
+                            throw ObjectiveCanvasUndefinedError("y");
                         }
                     } else {
                         this.removePoint(index);
                     }
                     return this;
                 } else {
-                    throw new ObjectiveCanvasIllegalValueError("index");
+                    throw ObjectiveCanvasIllegalValueError("index");
                 }
             } else {
-                throw new ObjectiveCanvasUndefinedError("index");
+                throw ObjectiveCanvasUndefinedError("index");
             }
         };
         // add point
@@ -808,16 +808,16 @@
                             }
                             return this;
                         } else {
-                            throw new ObjectiveCanvasIllegalValueError("index");
+                            throw ObjectiveCanvasIllegalValueError("index");
                         }
                     } else {
-                        throw new ObjectiveCanvasTypeError("index");
+                        throw ObjectiveCanvasTypeError("index");
                     }
                 } else {
-                    throw new ObjectiveCanvasTypeError("y");
+                    throw ObjectiveCanvasTypeError("y");
                 }
             } else {
-                throw new ObjectiveCanvasTypeError("x");
+                throw ObjectiveCanvasTypeError("x");
             }
         };
         // remove point
@@ -827,10 +827,10 @@
                     this.points.splice(index, 1);
                     return this;
                 } else {
-                    throw new ObjectiveCanvasIllegalValueError("index");
+                    throw ObjectiveCanvasIllegalValueError("index");
                 }
             } else {
-                throw new ObjectiveCanvasTypeError("index");
+                throw ObjectiveCanvasTypeError("index");
             }
         };
         // clear points
@@ -862,16 +862,170 @@
                 if (typeof x === "number" || typeof y === "number") {
                     p.push({ x, y });
                 } else {
-                    throw new ObjectiveCanvasIllegalValueError("points");
+                    throw ObjectiveCanvasIllegalValueError("points");
                 }
             }
             this.points = p;
         } else {
-            throw new ObjectiveCanvasTypeError("points");
+            throw ObjectiveCanvasTypeError("points");
         }
     };
     OC.Polygon.getInstance = function(...points) {
         return new this(points);
+    };
+
+    // text
+    OC.Text = function(text = "", font = "20px Consolas", x = 0, y = 0, w = 0, h = 0, r = 0) {
+        // inherit
+        OC.RoundRect.call(this, x, y, w, h, r);
+        // text
+        this.text = text;
+        // set text
+        this.setText = function(text = "") {
+            this.text = text;
+            return this;
+        };
+        // font
+        this.font = font;
+        // set font
+        this.setFont = function(font) {
+            this.font = font;
+            return this;
+        };
+        // text fillStyle
+        this.textFillStyle = "#333";
+        // set textFillStyle
+        this.setTextFillStyle = function(style) {
+            this.textFillStyle = style;
+            return this;
+        };
+        // text strokeStyle
+        this.textStrokeStyle = "#000";
+        // set textStrokeStyle
+        this.setTextStrokeStyle = function(style) {
+            this.textStrokeStyle = style;
+            return this;
+        };
+        // align
+        const align_legal_values = ["center", "left", "right"];
+        Object.defineProperty(this, "align", {
+            set: function(val) {
+                if (align_legal_values.indexOf(val) !== -1) {
+                    this._align = val;
+                } else {
+                    throw ObjectiveCanvasIllegalValueError("align");
+                }
+            },
+            get: function() {
+                return this._align || align_legal_values[0];
+            }
+        });
+        // set align
+        this.setAlign = function(align) {
+            this.align = align;
+            return this;
+        };
+        // baseline
+        const baseline_legal_values = ["middle", "top", "bottom"];
+        Object.defineProperty(this, "baseline", {
+            set: function(val) {
+                if (baseline_legal_values.indexOf(val) !== -1) {
+                    this._baseline = val;
+                } else {
+                    throw ObjectiveCanvasIllegalValueError("baseline");
+                }
+            },
+            get: function() {
+                return this._baseline || baseline_legal_values[0];
+            }
+        });
+        // set baseline
+        this.setBaseline = function(baseline) {
+            this.baseline = baseline;
+            return this;
+        };
+        // set color
+        this.setColor = function(fill, stroke) {
+            return this.setTextFillStyle(fill).setTextStrokeStyle(stroke);
+        };
+        // set location
+        this.setLocation = function(align, baseline) {
+            return this.setAlign(align).setBaseline(baseline);
+        };
+        // path
+        this.path = function(ctx = OC.defaultContext) {
+            throw ObjectiveCanvasUndefinedError("path()");
+        };
+        // fixed path
+        this.fixedPath = function(ctx = OC.defaultContext) {
+            throw ObjectiveCanvasUndefinedError("fixedPath()");
+        };
+        // fix pos
+        fix = ctx => {
+            var align = this.align.toLowerCase();
+            var baseline = this.baseline.toLowerCase();
+            ctx.textAlign = align;
+            ctx.textBaseline = baseline;
+            ctx.font = this.font;
+            var x = this.x;
+            var y = this.y;
+            if (align === "center") {
+                x += this.w / 2;
+            } else if (align === "right") {
+                x += this.w;
+            }
+            if (baseline === "middle") {
+                y += this.h / 2;
+            } else if (baseline === "bottom") {
+                y += this.h;
+            }
+            return { x, y };
+        };
+        // stroke text
+        this.strokeText = function(ctx = OC.defaultContext) {
+            ctx.save();
+            ctx.strokeStyle = this.textStrokeStyle;
+            var { x, y } = fix(ctx);
+            ctx.strokeText(this.text, x, y);
+            ctx.restore();
+            return this;
+        };
+        // fill text
+        this.fillText = function(ctx = OC.defaultContext) {
+            ctx.save();
+            ctx.fillStyle = this.textFillStyle;
+            var { x, y } = fix(ctx);
+            ctx.fillText(this.text, x, y);
+            ctx.restore();
+            return this;
+        };
+        // stroke
+        this.stroke = function(ctx = OC.defaultContext) {
+            OC.RoundRect.getInstance(this.x, this.y, this.w, this.h, this.r).stroke(ctx);
+            this.strokeText(ctx);
+            return this;
+        };
+        // fill
+        this.fill = function(ctx = OC.defaultContext) {
+            OC.RoundRect.getInstance(this.x, this.y, this.w, this.h, this.r).setFillStyle(this.fillStyle).fill(ctx);
+            this.fillText(ctx);
+            return this;
+        };
+        // draw text
+        this.drawText = function(ctx = OC.defaultContext) {
+            this.fillText(ctx);
+            this.strokeText(ctx);
+            return this;
+        };
+        // draw
+        this.draw = function(ctx = OC.defaultContext) {
+            OC.RoundRect.getInstance(this.x, this.y, this.w, this.h, this.r).setFillStyle(this.fillStyle).setStrokeStyle(this.strokeStyle).draw(ctx);
+            this.drawText(ctx);
+            return this;
+        };
+    };
+    OC.Text.getInstance = function(text = "", x = 0, y = 0, w = 0, h = 0, r = 0, textFillStyle = "#333333", textStrokeStyle = "#000000", align = "center", baseline = "middle", fillStyle = "rgba(0, 0, 0, 0)", strokeStyle = "rgba(0, 0, 0, 0)") {
+        return new this(text, x, y, w, h, r, textFillStyle, textStrokeStyle, align, baseline, fillStyle, strokeStyle);
     };
 
     // ------ //
