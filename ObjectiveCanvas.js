@@ -16,21 +16,18 @@
 
     // TypeError
     function ObjectiveCanvasTypeError(property) {
-        this.message = "Error type for '" + property + "'!";
+        Error.call(this, "Error type for '" + property + "'!");
     }
-    ObjectiveCanvasTypeError.prototype = new Error();
 
     // UndefinedError
     function ObjectiveCanvasUndefinedError(property) {
-        this.message = property + " has not been defined!";
+        Error.call(this, property + " has not been defined!");
     }
-    ObjectiveCanvasUndefinedError.prototype = new Error();
 
     // IllegalValueError
     function ObjectiveCanvasIllegalValueError(property) {
-        this.message = "Illegal value for '" + property + "'!";
+        Error.call(this, "Illegal value for '" + property + "'!");
     }
-    ObjectiveCanvasIllegalValueError.prototype = new Error();
 
     // --------- //
     // container //
@@ -392,12 +389,14 @@
             return this.fill(ctx).stroke(ctx);
         };
     };
-    OC.Object.createNew = function() {
+    OC.Object.getInstance = function() {
         return new this();
     };
 
     // shape
     OC.Shape = function(x = 0, y = 0) {
+        // inherit
+        OC.Object.call(this);
         // x
         Object.defineProperty(this, 'x', {
             set: function(val) {
@@ -452,13 +451,14 @@
         this.x = x;
         this.y = y;
     };
-    OC.Shape.createNew = function(x = 0, y = 0) {
+    OC.Shape.getInstance = function(x = 0, y = 0) {
         return new this(x, y);
     };
-    OC.Shape.prototype = new OC.Object();
 
     // rect
     OC.Rect = function(x = 0, y = 0, w = 0, h = 0) {
+        // inherit
+        OC.Shape.call(this, x, y);
         // w
         Object.defineProperty(this, "w", {
             set: function(val) {
@@ -515,27 +515,22 @@
             return this;
         };
         // init
-        this.x = x;
-        this.y = y;
         this.w = w;
         this.h = h;
     };
-    OC.Rect.prototype = new OC.Shape();
-    OC.Rect.createNew = function(x = 0, y = 0, w = 0, h = 0) {
+    OC.Rect.getInstance = function(x = 0, y = 0, w = 0, h = 0) {
         return new this(x, y, w, h);
     };
 
     // round rect
     OC.RoundRect = function(x = 0, y = 0, w = 0, h = 0, r = 0) {
+        // inherit
+        OC.Rect.call(this, x, y, w, h);
         // r
         Object.defineProperty(this, "r", {
             set: function(val) {
                 if (typeof val === "number") {
-                    if (val < 0) {
-                        throw new ObjectiveCanvasIllegalValueError("r");
-                    } else {
-                        this._r = val;
-                    }
+                    this._r = val;
                 } else {
                     throw new ObjectiveCanvasTypeError("r");
                 }
@@ -559,34 +554,35 @@
             var y = this.y;
             var w = this.w;
             var h = this.h;
-            var r = Math.max(Math.min(this.r, Math.min(w, h) / 2), 0);
+            var r = this.r;
+            var min = Math.min(w, h);
+            if (Math.abs(r) > min) {
+                r = r > 0 ? min : -min;
+            }
             ctx.beginPath();
-            ctx.moveTo(r, 0);
-            ctx.lineTo(w - r, 0);
-            ctx.arcTo(w, 0, w, r, r);
-            ctx.lineTo(w, h - r);
-            ctx.arcTo(w, h, w - r, h, r);
-            ctx.lineTo(r, h);
-            ctx.arcTo(0, h, 0, h - r, r);
-            ctx.lineTo(0, r);
-            ctx.arcTo(0, 0, r, 0, r);
+            r >= 0 ? ctx.moveTo(r, 0) : ctx.moveTo(-r, 0);
+            r >= 0 ? ctx.lineTo(w - r, 0) : ctx.lineTo(w + r, 0);
+            r >= 0 ? ctx.arcTo(w, 0, w, r, r) : ctx.arcTo(w + r, -r, w, -r, -r);
+            r >= 0 ? ctx.lineTo(w, h - r) : ctx.lineTo(w, h + r);
+            r >= 0 ? ctx.arcTo(w, h, w - r, h, r) : ctx.arcTo(w + r, h + r, w + r, h, -r);
+            r >= 0 ? ctx.lineTo(r, h) : ctx.lineTo(-r, h);
+            r >= 0 ? ctx.arcTo(0, h, 0, h - r, r) : ctx.arcTo(-r, h + r, 0, h + r, -r);
+            r >= 0 ? ctx.lineTo(0, r) : ctx.lineTo(0, -r);
+            r >= 0 ? ctx.arcTo(0, 0, r, 0, r) : ctx.arcTo(-r, -r, -r, 0, -r);
             ctx.closePath();
             return this;
         };
         // init
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
         this.r = r;
     };
-    OC.RoundRect.prototype = new OC.Rect();
-    OC.RoundRect.createNew = function(x = 0, y = 0, w = 0, h = 0, r = 0) {
+    OC.RoundRect.getInstance = function(x = 0, y = 0, w = 0, h = 0, r = 0) {
         return new this(x, y, w, h, r);
     };
 
     // circle
     OC.Circle = function(x = 0, y = 0, r = 0) {
+        // inherit
+        OC.Shape.call(this, x, y);
         // r
         Object.defineProperty(this, "r", {
             set: function(val) {
@@ -617,17 +613,16 @@
             return this;
         };
         // init
-        this.x = x;
-        this.y = y;
         this.r = r;
     };
-    OC.Circle.prototype = new OC.Shape();
-    OC.Circle.createNew = function(x = 0, y = 0, r = 0) {
+    OC.Circle.getInstance = function(x = 0, y = 0, r = 0) {
         return new this(x, y, r);
     };
 
     // star 
     OC.Star = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0, angleCount = 5) {
+        // inherit
+        OC.Shape.call(this, x, y);
         // innerRadius
         Object.defineProperty(this, "innerRadius", {
             set: function(val) {
@@ -717,19 +712,18 @@
             return this;
         };
         // init
-        this.x = x;
-        this.y = y;
         this.innerRadius = innerRadius;
         this.outerRadius = outerRadius;
         this.angleCount = angleCount;
     };
-    OC.Star.prototype = new OC.Shape();
-    OC.Star.createNew = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0, angleCount = 5) {
+    OC.Star.getInstance = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0, angleCount = 5) {
         return new this(x, y, innerRadius, outerRadius, angleCount);
     };
 
     // line
     OC.Line = function(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
+        // inherit
+        OC.Shape.call(this);
         // x1, y1, x2, y2
         ["x1", "y1", "x2", "y2"].forEach(p => {
             Object.defineProperty(this, p, {
@@ -752,13 +746,14 @@
         this.x2 = x2;
         this.y2 = y2;
     };
-    OC.Line.prototype = new OC.Object();
-    OC.Line.createNew = function(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
+    OC.Line.getInstance = function(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
         return new this(x1, y1, x2, y2);
     };
 
     // polygon
     OC.Polygon = function(...points) {
+        // inherit
+        OC.Shape.call(this);
         // points
         Object.defineProperty(this, "points", {
             set: function(arr) {
@@ -875,8 +870,7 @@
             throw new ObjectiveCanvasTypeError("points");
         }
     };
-    OC.Polygon.prototype = new OC.Object();
-    OC.Polygon.createNew = function(...points) {
+    OC.Polygon.getInstance = function(...points) {
         return new this(points);
     };
 

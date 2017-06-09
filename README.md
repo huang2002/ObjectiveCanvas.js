@@ -15,7 +15,7 @@ circle.fill(ctx);
 or:
 ```
 var ctx = document.getElementById("canvas").getContext("2d");
-OC.Circle.createNew(100, 100, 50).setFillStyle("#FF0000").fill(ctx);
+OC.Circle.getInstance(100, 100, 50).setFillStyle("#FF0000").fill(ctx);
 ```
 In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective way. 
 
