@@ -92,7 +92,7 @@
         defineProperty.call(this, self, "shadowOffsetY");
         defineProperty.call(this, self, "offsetX");
         defineProperty.call(this, self, "offsetY");
-        defineProperty.call(this, self, "opacity", val => typeof val === 'number' && val >= 0 && val <= 0);
+        defineProperty.call(this, self, "opacity", val => typeof val === 'number' && val >= 0 && val <= 1, undefined, 1);
         defineProperty_num_any.call(this, self, "scaleX", 1);
         defineProperty_num_any.call(this, self, "scaleY", 1);
         defineProperty.call(this, self, "rotateDeg");
@@ -174,7 +174,7 @@
         // fill shape
         this.fill = function(ctx = OC.defaultContext) {
             if (!ctx) {
-                throw ObjectiveCanvasUndefinedError("ctx");
+                throw new Error('"ctx" has not been defined!');
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
@@ -192,7 +192,7 @@
         // stroke shape
         this.stroke = function(ctx = OC.defaultContext) {
             if (!ctx) {
-                throw ObjectiveCanvasUndefinedError("ctx");
+                throw new Error('"ctx" has not been defined!');
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
@@ -209,7 +209,7 @@
         // stroke shape
         this.strokeWithShadow = function(ctx = OC.defaultContext) {
             if (!ctx) {
-                throw ObjectiveCanvasUndefinedError("ctx");
+                throw new Error('"ctx" has not been defined!');
             } else {
                 ctx.save();
                 this.fixedPath(ctx);
@@ -241,7 +241,11 @@
     // shape
     OC.Shape = function(x = 0, y = 0) {
         // inherit
-        OC.Object.call(this);
+        try {
+            OC.Object.call(this);
+        } catch (err) {
+            throw new Error(err.message);
+        }
         // private obj
         var self = {};
         // define properties
@@ -282,7 +286,11 @@
     // rect
     OC.Rect = function(x = 0, y = 0, w = 0, h = 0) {
         // inherit
-        OC.Shape.call(this, x, y);
+        try {
+            OC.Shape.call(this, x, y);
+        } catch (err) {
+            throw new Error(err.message);
+        }
         // private obj
         var self = {};
         // define properties
@@ -303,9 +311,12 @@
             ctx.closePath();
             return this;
         };
-        // init
-        this.w = w;
-        this.h = h;
+        try {
+            this.w = w;
+            this.h = h;
+        } catch (err) {
+            throw new Error(err.message);
+        }
     };
     OC.Rect.getInstance = function(x = 0, y = 0, w = 0, h = 0) {
         var obj = {};
@@ -316,7 +327,11 @@
     // round rect
     OC.RoundRect = function(x = 0, y = 0, w = 0, h = 0, r = 0) {
         // inherit
-        OC.Rect.call(this, x, y, w, h);
+        try {
+            OC.Rect.call(this, x, y, w, h);
+        } catch (err) {
+            throw new Error(err.message);
+        }
         // private obj
         var self = {};
         // define properties
@@ -340,21 +355,37 @@
             if (Math.abs(r) > min) {
                 r = r > 0 ? min : -min;
             }
-            ctx.beginPath();
-            r >= 0 ? ctx.moveTo(r, 0) : ctx.moveTo(-r, 0);
-            r >= 0 ? ctx.lineTo(w - r, 0) : ctx.lineTo(w + r, 0);
-            r >= 0 ? ctx.arcTo(w, 0, w, r, r) : ctx.arcTo(w + r, -r, w, -r, -r);
-            r >= 0 ? ctx.lineTo(w, h - r) : ctx.lineTo(w, h + r);
-            r >= 0 ? ctx.arcTo(w, h, w - r, h, r) : ctx.arcTo(w + r, h + r, w + r, h, -r);
-            r >= 0 ? ctx.lineTo(r, h) : ctx.lineTo(-r, h);
-            r >= 0 ? ctx.arcTo(0, h, 0, h - r, r) : ctx.arcTo(-r, h + r, 0, h + r, -r);
-            r >= 0 ? ctx.lineTo(0, r) : ctx.lineTo(0, -r);
-            r >= 0 ? ctx.arcTo(0, 0, r, 0, r) : ctx.arcTo(-r, -r, -r, 0, -r);
+            if (r >= 0) {
+                ctx.beginPath();
+                ctx.moveTo(r, 0);
+                ctx.lineTo(w - r, 0);
+                ctx.arcTo(w, 0, w, r, r);
+                ctx.lineTo(w, h - r);
+                ctx.arcTo(w, h, w - r, h, r);
+                ctx.lineTo(r, h);
+                ctx.arcTo(0, h, 0, h - r, r);
+                ctx.lineTo(0, r);
+                ctx.arcTo(0, 0, r, 0, r);
+            } else {
+                ctx.moveTo(-r, 0);
+                ctx.lineTo(w + r, 0);
+                ctx.arcTo(w + r, -r, w, -r, -r);
+                ctx.lineTo(w, h + r);
+                ctx.arcTo(w + r, h + r, w + r, h, -r);
+                ctx.lineTo(-r, h);
+                ctx.arcTo(-r, h + r, 0, h + r, -r);
+                ctx.lineTo(0, -r);
+                ctx.arcTo(-r, -r, -r, 0, -r);
+            }
             ctx.closePath();
             return this;
         };
         // init
-        this.r = r;
+        try {
+            this.r = r;
+        } catch (err) {
+            throw new Error(err.message);
+        }
     };
     OC.RoundRect.getInstance = function(x = 0, y = 0, w = 0, h = 0, r = 0) {
         var obj = {};
@@ -365,7 +396,11 @@
     // circle
     OC.Circle = function(x = 0, y = 0, r = 0) {
         // inherit
-        OC.Shape.call(this, x, y);
+        try {
+            OC.Shape.call(this, x, y);
+        } catch (err) {
+            throw new Error(err.message);
+        }
         // private obj
         var self = {};
         // define properties
@@ -378,7 +413,11 @@
             return this;
         };
         // init
-        this.r = r;
+        try {
+            this.r = r;
+        } catch (err) {
+            throw new Error(err.message);
+        }
     };
     OC.Circle.getInstance = function(x = 0, y = 0, r = 0) {
         var obj = {};
@@ -389,7 +428,11 @@
     // star 
     OC.Star = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0, angleCount = 5) {
         // inherit
-        OC.Shape.call(this, x, y);
+        try {
+            OC.Shape.call(this, x, y);
+        } catch (err) {
+            throw new Error(err.message);
+        }
         // private obj
         var self = {};
         // define properties
@@ -423,9 +466,13 @@
             return this;
         };
         // init
-        this.innerRadius = innerRadius;
-        this.outerRadius = outerRadius;
-        this.angleCount = angleCount;
+        try {
+            this.innerRadius = innerRadius;
+            this.outerRadius = outerRadius;
+            this.angleCount = angleCount;
+        } catch (err) {
+            throw new Error(err.message);
+        }
     };
     OC.Star.getInstance = function(x = 0, y = 0, innerRadius = 0, outerRadius = 0, angleCount = 5) {
         var obj = {};
@@ -436,7 +483,11 @@
     // line
     OC.Line = function(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
         // inherit
-        OC.Shape.call(this);
+        try {
+            OC.Shape.call(this);
+        } catch (err) {
+            throw new Error(err.message);
+        }
         // private obj
         var self = {};
         // define properties
@@ -452,10 +503,14 @@
             ctx.lineTo(this.x2, this.y2);
         };
         // init
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
+        try {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+        } catch (err) {
+            throw new Error(err.message);
+        }
     };
     OC.Line.getInstance = function(x1 = 0, y1 = 0, x2 = 0, y2 = 0) {
         var obj = {};
@@ -466,7 +521,11 @@
     // polygon
     OC.Polygon = function(...points) {
         // inherit
-        OC.Shape.call(this);
+        try {
+            OC.Shape.call(this);
+        } catch (err) {
+            throw new Error(err.message);
+        }
         // private obj
         var self = {};
         // define properties
@@ -577,13 +636,17 @@
     // text
     OC.Text = function(text = "", font = "20px Consolas", x = 0, y = 0, w = 0, h = 0, r = 0) {
         // inherit
-        OC.RoundRect.call(this, x, y, w, h, r);
+        try {
+            OC.RoundRect.call(this, x, y, w, h, r);
+        } catch (err) {
+            throw new Error(err.message);
+        }
         // private obj
         var self = {};
         // define properties
         defineProperty.call(this, self, "text", undefined, undefined, text);
         defineProperty.call(this, self, "font", undefined, undefined, font);
-        defineProperty.call(this, self, "textFillStyle", undefined, undefined, '#cccccc');
+        defineProperty.call(this, self, "textFillStyle", undefined, undefined, '#555555');
         defineProperty.call(this, self, "textStrokeStyle", undefined, undefined, '#000000');
         defineProperty_in.call(this, self, "align", ["center", "left", "right"], "center");
         defineProperty_in.call(this, self, "baseline", ["middle", "top", "bottom"], "middle");
@@ -599,14 +662,6 @@
                 throw new Error(err.message);
             }
         };
-        // path
-        this.path = function(ctx = OC.defaultContext) {
-            throw ObjectiveCanvasUndefinedError("path()");
-        };
-        // fixed path
-        this.fixedPath = function(ctx = OC.defaultContext) {
-            throw ObjectiveCanvasUndefinedError("fixedPath()");
-        };
         // fix pos
         fix = ctx => {
             var align = this.align.toLowerCase();
@@ -614,8 +669,8 @@
             ctx.textAlign = align;
             ctx.textBaseline = baseline;
             ctx.font = this.font;
-            var x = this.x;
-            var y = this.y;
+            var x = 0;
+            var y = 0;
             if (align === "center") {
                 x += this.w / 2;
             } else if (align === "right") {
@@ -632,6 +687,10 @@
         this.strokeText = function(ctx = OC.defaultContext) {
             ctx.save();
             ctx.strokeStyle = this.textStrokeStyle;
+            ctx.globalAlpha = this.opacity;
+            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
+            ctx.scale(this.scaleX, this.scaleY);
+            ctx.rotate(this.rotateDeg / 180 * Math.PI);
             var { x, y } = fix(ctx);
             ctx.strokeText(this.text, x, y);
             ctx.restore();
@@ -641,20 +700,28 @@
         this.fillText = function(ctx = OC.defaultContext) {
             ctx.save();
             ctx.fillStyle = this.textFillStyle;
+            ctx.globalAlpha = this.opacity;
+            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
+            ctx.scale(this.scaleX, this.scaleY);
+            ctx.rotate(this.rotateDeg / 180 * Math.PI);
             var { x, y } = fix(ctx);
             ctx.fillText(this.text, x, y);
             ctx.restore();
             return this;
         };
+        // get bg rect
+        getBgRect = () => {
+            return OC.RoundRect.getInstance(this.x, this.y, this.w, this.h, this.r).setOffset(this.offsetX, this.offsetY).setScale(this.scaleX, this.scaleY).setRotateDeg(this.rotateDeg).setOpacity(this.opacity);
+        };
         // stroke
         this.stroke = function(ctx = OC.defaultContext) {
-            OC.RoundRect.getInstance(this.x, this.y, this.w, this.h, this.r).stroke(ctx);
+            getBgRect().setLineWidth(this.lineWidth).setStrokeStyle(this.strokeStyle).stroke(ctx);
             this.strokeText(ctx);
             return this;
         };
         // fill
         this.fill = function(ctx = OC.defaultContext) {
-            OC.RoundRect.getInstance(this.x, this.y, this.w, this.h, this.r).setFillStyle(this.fillStyle).fill(ctx);
+            getBgRect().setFillStyle(this.fillStyle).fill(ctx);
             this.fillText(ctx);
             return this;
         };
@@ -666,7 +733,7 @@
         };
         // draw
         this.draw = function(ctx = OC.defaultContext) {
-            OC.RoundRect.getInstance(this.x, this.y, this.w, this.h, this.r).setFillStyle(this.fillStyle).setStrokeStyle(this.strokeStyle).draw(ctx);
+            getBgRect().setLineWidth(this.lineWidth).setStrokeStyle(this.strokeStyle).setFillStyle(this.fillStyle).draw(ctx);
             this.drawText(ctx);
             return this;
         };
