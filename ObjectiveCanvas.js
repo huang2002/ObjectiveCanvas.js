@@ -582,7 +582,7 @@
         var self = {};
         // define properties
         defineProperty.call(this, self, "text", undefined, undefined, text);
-        defineProperty.call(this, self, "font", undefined, undefined, text);
+        defineProperty.call(this, self, "font", undefined, undefined, font);
         defineProperty.call(this, self, "textFillStyle", undefined, undefined, '#cccccc');
         defineProperty.call(this, self, "textStrokeStyle", undefined, undefined, '#000000');
         defineProperty_in.call(this, self, "align", ["center", "left", "right"], "center");
