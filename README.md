@@ -30,6 +30,7 @@ Some constructors are under the main object(OC).
 * Star
 * Line
 * Polygon
+* Text
 * ......
 
 ## What can I do with them ?
