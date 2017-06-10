@@ -286,7 +286,6 @@
         // private obj
         var self = {};
         // define properties
-        defineProperty_num_any.call(this, self, "x");
         defineProperty_num_fixed.call(this, self, "w");
         defineProperty_num_fixed.call(this, self, "h");
         // set size
