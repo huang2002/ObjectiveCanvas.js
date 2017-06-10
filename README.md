@@ -1,5 +1,5 @@
 # ObjectiveCanvas.js
-To use &lt;canvas&gt; in a more beautiful way.
+> To use &lt;canvas&gt; in a more beautiful way.
 
 ## What's ObjectiveCanvas(OC).js ?
 It contains some constructors which you can use to create some objects and draw them on &lt;canvas&gt;.
