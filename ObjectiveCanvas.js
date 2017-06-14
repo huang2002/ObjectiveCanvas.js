@@ -4,10 +4,11 @@
  */
 (function() {
 
-    // load error
-    if (window.OC) {
-        // double load ?
+    // check
+    if (window.OC !== undefined) {
         return;
+    } else {
+        window.OC = {};
     }
 
     // ------------------ //
@@ -56,11 +57,55 @@
         defineProperty.call(this, obj, property, val => arr.indexOf(val) !== -1, undefined, value);
     }
 
-    // --------- //
-    // container //
-    // --------- //
+    // ------- //
+    // promise //
+    // ------- //
 
-    var OC = Object();
+    // promise
+    function Promise() {
+        function run(arr, args) {
+            arg = args;
+            while (arr.length) {
+                var fn = arr.shift();
+                arg = fn(arg);
+            }
+            return arg;
+        }
+        var suc = [];
+        var fail = [];
+        var caught = [];
+        var arg = null;
+        this.success = function(fn) {
+            if (!fn instanceof Function) {
+                throw new Error('"fn" is not a function!');
+            }
+            suc.push(fn);
+            return this;
+        };
+        this.failure = function(fn) {
+            if (!fn instanceof Function) {
+                throw new Error('"fn" is not a function!');
+            }
+            fail.push(fn);
+            return this;
+        };
+        this.error = function(fn) {
+            if (!fn instanceof Function) {
+                throw new Error('"fn" is not a function!');
+            }
+            caught.push(fn);
+            return this;
+        };
+        this.resolve = function(...args) {
+            run(suc, arguments);
+        };
+        this.reject = function(...args) {
+            run(fail, arguments);
+        };
+        this.caught = function(...args) {
+            run(fail, arguments);
+        };
+    }
 
     // ------------- //
     // define method //
@@ -80,34 +125,22 @@
     // ------------------ //
 
     // object
-    OC.Object = function() {
+    OC.Object = function(x = 0, y = 0) {
         // private obj
         var self = {};
         // define properties
-        defineProperty.call(this, self, "fillStyle", undefined, undefined, "#000000");
-        defineProperty.call(this, self, "strokeStyle", undefined, undefined, "#000000");
-        defineProperty_num_fixed.call(this, self, "lineWidth", 1);
-        defineProperty_num_fixed.call(this, self, "shadowBlur");
-        defineProperty.call(this, self, "shadowOffsetX");
-        defineProperty.call(this, self, "shadowOffsetY");
+        defineProperty_num_any.call(this, self, "x");
+        defineProperty_num_any.call(this, self, "y");
         defineProperty.call(this, self, "offsetX");
         defineProperty.call(this, self, "offsetY");
         defineProperty.call(this, self, "opacity", val => typeof val === 'number' && val >= 0 && val <= 1, undefined, 1);
         defineProperty_num_any.call(this, self, "scaleX", 1);
         defineProperty_num_any.call(this, self, "scaleY", 1);
         defineProperty.call(this, self, "rotateDeg");
-        // set shadow offset
-        this.setShadowOffset = function(x, y = x) {
+        // set pos
+        this.setPos = function(x, y) {
             try {
-                return this.setShadowOffsetX(x).setShadowOffsetY(y);
-            } catch (err) {
-                throw new Error(err.message);
-            }
-        };
-        // set shadow
-        this.setShadow = function(offsetX, offsetY, blur, color) {
-            try {
-                return this.setShadowOffset(offsetX, offsetY).setShadowBlur(blur).setShadowColor(color);
+                return this.setX(x).setY(y);
             } catch (err) {
                 throw new Error(err.message);
             }
@@ -157,19 +190,71 @@
                 throw new Error(err.message);
             }
         };
-        // path
-        this.path = function(ctx = OC.defaultContext) {
-            throw Error('"path()" has not been defined!');
+        // fix
+        this.fix = function(ctx = OC.defaultContext, callback = function(ctx) {}) {
+            ctx.save();
+            ctx.globalAlpha = this.opacity;
+            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
+            ctx.scale(this.scaleX, this.scaleY);
+            ctx.rotate(this.rotateDeg / 180 * Math.PI);
+            callback(ctx);
+            ctx.restore();
+        };
+        // init
+        try {
+            this.x = x;
+            this.y = y;
+        } catch (err) {
+            throw new Error(err.message);
+        }
+    };
+    OC.Object.getInstance = function() {
+        var obj = {};
+        this.apply(obj, arguments);
+        return obj;;
+    };
+
+    // shape
+    OC.Shape = function(x = 0, y = 0) {
+        // inherit
+        try {
+            OC.Object.call(this);
+        } catch (err) {
+            throw new Error(err.message);
+        }
+        // private obj
+        var self = {};
+        // define properties
+        defineProperty.call(this, self, "fillStyle", undefined, undefined, "#000000");
+        defineProperty.call(this, self, "strokeStyle", undefined, undefined, "#000000");
+        defineProperty_num_fixed.call(this, self, "lineWidth", 1);
+        defineProperty_num_fixed.call(this, self, "shadowBlur");
+        defineProperty.call(this, self, "shadowOffsetX");
+        defineProperty.call(this, self, "shadowOffsetY");
+        // set shadow offset
+        this.setShadowOffset = function(x, y = x) {
+            try {
+                return this.setShadowOffsetX(x).setShadowOffsetY(y);
+            } catch (err) {
+                throw new Error(err.message);
+            }
+        };
+        // set shadow
+        this.setShadow = function(offsetX, offsetY, blur, color) {
+            try {
+                return this.setShadowOffset(offsetX, offsetY).setShadowBlur(blur).setShadowColor(color);
+            } catch (err) {
+                throw new Error(err.message);
+            }
         };
         // fixed path
         this.fixedPath = function(ctx = OC.defaultContext) {
-            ctx.save();
-            ctx.translate(this.offsetX, this.offsetY);
-            ctx.scale(this.scaleX, this.scaleY);
-            ctx.rotate(this.rotateDeg / 180 * Math.PI);
-            this.path(ctx);
-            ctx.restore();
+            this.fix(ctx, () => this.path(ctx));
             return this;
+        };
+        // path
+        this.path = function(ctx = OC.defaultContext) {
+            throw Error('"path()" has not been defined!');
         };
         // fill shape
         this.fill = function(ctx = OC.defaultContext) {
@@ -230,44 +315,6 @@
         // draw shape
         this.draw = function(ctx = OC.defaultContext) {
             return this.fill(ctx).stroke(ctx);
-        };
-    };
-    OC.Object.getInstance = function() {
-        var obj = {};
-        this.apply(obj, arguments);
-        return obj;;
-    };
-
-    // shape
-    OC.Shape = function(x = 0, y = 0) {
-        // inherit
-        try {
-            OC.Object.call(this);
-        } catch (err) {
-            throw new Error(err.message);
-        }
-        // private obj
-        var self = {};
-        // define properties
-        defineProperty_num_any.call(this, self, "x");
-        defineProperty_num_any.call(this, self, "y");
-        // set pos
-        this.setPos = function(x, y) {
-            try {
-                return this.setX(x).setY(y);
-            } catch (err) {
-                throw new Error(err.message);
-            }
-        };
-        // fixed path
-        this.fixedPath = function(ctx = OC.defaultContext) {
-            ctx.save();
-            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
-            ctx.scale(this.scaleX, this.scaleY);
-            ctx.rotate(this.rotateDeg / 180 * Math.PI);
-            this.path(ctx);
-            ctx.restore();
-            return this;
         };
         // init
         try {
@@ -355,8 +402,8 @@
             if (Math.abs(r) > min) {
                 r = r > 0 ? min : -min;
             }
+            ctx.beginPath();
             if (r >= 0) {
-                ctx.beginPath();
                 ctx.moveTo(r, 0);
                 ctx.lineTo(w - r, 0);
                 ctx.arcTo(w, 0, w, r, r);
@@ -634,7 +681,7 @@
     };
 
     // text
-    OC.Text = function(text = "", font = "20px Consolas", x = 0, y = 0, w = 0, h = 0, r = 0) {
+    OC.Text = function(text = "", font = "25px Consolas", x = 0, y = 0, w = 0, h = 0, r = 0) {
         // inherit
         try {
             OC.RoundRect.call(this, x, y, w, h, r);
@@ -685,28 +732,22 @@
         };
         // stroke text
         this.strokeText = function(ctx = OC.defaultContext) {
-            ctx.save();
-            ctx.strokeStyle = this.textStrokeStyle;
-            ctx.globalAlpha = this.opacity;
-            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
-            ctx.scale(this.scaleX, this.scaleY);
-            ctx.rotate(this.rotateDeg / 180 * Math.PI);
-            var { x, y } = fix(ctx);
-            ctx.strokeText(this.text, x, y);
-            ctx.restore();
+            var self = this;
+            this.fix(ctx, function(ctx) {
+                ctx.strokeStyle = self.textStrokeStyle;
+                var { x, y } = fix(ctx);
+                ctx.strokeText(self.text, x, y);
+            });
             return this;
         };
         // fill text
         this.fillText = function(ctx = OC.defaultContext) {
-            ctx.save();
-            ctx.fillStyle = this.textFillStyle;
-            ctx.globalAlpha = this.opacity;
-            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
-            ctx.scale(this.scaleX, this.scaleY);
-            ctx.rotate(this.rotateDeg / 180 * Math.PI);
-            var { x, y } = fix(ctx);
-            ctx.fillText(this.text, x, y);
-            ctx.restore();
+            var self = this;
+            this.fix(ctx, function(ctx) {
+                ctx.fillStyle = self.textFillStyle;
+                var { x, y } = fix(ctx);
+                ctx.fillText(self.text, x, y);
+            });
             return this;
         };
         // get bg rect
@@ -738,17 +779,88 @@
             return this;
         };
     };
-    OC.Text.getInstance = function(text = "", x = 0, y = 0, w = 0, h = 0, r = 0, textFillStyle = "#333333", textStrokeStyle = "#000000", align = "center", baseline = "middle", fillStyle = "rgba(0, 0, 0, 0)", strokeStyle = "rgba(0, 0, 0, 0)") {
+    OC.Text.getInstance = function(text = "", font = "25px Consolas", x = 0, y = 0, w = 0, h = 0, r = 0) {
         var obj = {};
         this.apply(obj, arguments);
         return obj;;
     };
 
-    // ------ //
-    // export //
-    // ------ //
-
-    // export
-    window.OC = OC;
+    // spirit
+    OC.Spirit = function(url = false, x = 0, y = 0) {
+        // private obj
+        var self = {};
+        var img = new Image();
+        // inherit
+        try {
+            OC.Object.call(this, x, y);
+        } catch (err) {
+            throw new Error(err.message);
+        }
+        // src setter
+        setSrc = url => {
+            this.isLoaded = false;
+            img.onload = () => {
+                this.isLoaded = true;
+            };
+            img.src = url;
+        };
+        // define properties
+        Object.defineProperty(this, 'src', {
+            set: function(url) {
+                setSrc(url);
+            },
+            get: function() {
+                return img.src;
+            }
+        });
+        defineProperty_in.call(this, self, 'isLoaded', [true, false], false);
+        // set src
+        this.setSrc = function(url) {
+            setSrc(url);
+            return this;
+        };
+        // draw
+        this.fill = function(ctx = OC.defaultContext) {
+            if (img.src == undefined) {
+                throw new Error('"src" is not defined!');
+            } else if (this.isLoaded === false) {
+                throw new Error('Image has not been loaded!');
+            }
+            var self = this;
+            this.fix(ctx, function(ctx) {
+                ctx.drawImage(img, self.x, self.y);
+            });
+            return this;
+        };
+        // init
+        if (url !== false) {
+            this.src = url;
+        }
+    };
+    OC.Spirit.getInstance = function(url, x = 0, y = 0) {
+        var obj = {};
+        this.apply(obj, arguments);
+        return obj;
+    };
+    OC.Spirit.preload = function(...url) {
+        function load(url, promise) {
+            if (typeof url !== 'string') {
+                throw new Error('"' + url + '" is not a url!');
+            }
+            var img = new Image();
+            img.onload = function(e) {
+                if (urls.length) {
+                    load([].shift.call(urls), promise);
+                } else {
+                    promise.resolve();
+                }
+            };
+            img.src = url;
+        }
+        var promise = new Promise();
+        var urls = arguments;
+        load([].shift.call(urls), promise);
+        return promise;
+    };
 
 })();
