@@ -316,6 +316,18 @@
         this.draw = function(ctx = OC.defaultContext) {
             return this.fill(ctx).stroke(ctx);
         };
+        // point is in path
+        this.pointIsInPath = function(x, y) {
+            if (typeof x !== 'number') {
+                throw new Error('Illegal value for "x"!');
+            } else if (typeof y !== 'number') {
+                throw new Error('Illegal value for "y"!');
+            }
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            this.fixedPath(ctx);
+            return ctx.isPointInPath(x, y);
+        };
         // init
         try {
             this.x = x;
