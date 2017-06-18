@@ -218,14 +218,14 @@
     OC.Shape = function(x = 0, y = 0) {
         // inherit
         try {
-            OC.Object.call(this);
+            OC.Object.apply(this, arguments);
         } catch (err) {
             throw new Error(err.message);
         }
         // private obj
         var self = {};
         // define properties
-        defineProperty.call(this, self, "fillStyle", undefined, undefined, "#000000");
+        defineProperty.call(this, self, "fillStyle", undefined, undefined, "#cccccc");
         defineProperty.call(this, self, "strokeStyle", undefined, undefined, "#000000");
         defineProperty_num_fixed.call(this, self, "lineWidth", 1);
         defineProperty_num_fixed.call(this, self, "shadowBlur");
@@ -722,23 +722,23 @@
             }
         };
         // fix pos
-        fix = ctx => {
-            var align = this.align.toLowerCase();
-            var baseline = this.baseline.toLowerCase();
+        function fix(self, ctx) {
+            var align = self.align.toLowerCase();
+            var baseline = self.baseline.toLowerCase();
             ctx.textAlign = align;
             ctx.textBaseline = baseline;
-            ctx.font = this.font;
+            ctx.font = self.font;
             var x = 0;
             var y = 0;
             if (align === "center") {
-                x += this.w / 2;
+                x += self.w / 2;
             } else if (align === "right") {
-                x += this.w;
+                x += self.w;
             }
             if (baseline === "middle") {
-                y += this.h / 2;
+                y += self.h / 2;
             } else if (baseline === "bottom") {
-                y += this.h;
+                y += self.h;
             }
             return { x, y };
         };
@@ -747,7 +747,7 @@
             var self = this;
             this.fix(ctx, function(ctx) {
                 ctx.strokeStyle = self.textStrokeStyle;
-                var { x, y } = fix(ctx);
+                var { x, y } = fix(self, ctx);
                 ctx.strokeText(self.text, x, y);
             });
             return this;
@@ -757,24 +757,24 @@
             var self = this;
             this.fix(ctx, function(ctx) {
                 ctx.fillStyle = self.textFillStyle;
-                var { x, y } = fix(ctx);
+                var { x, y } = fix(self, ctx);
                 ctx.fillText(self.text, x, y);
             });
             return this;
         };
         // get bg rect
-        getBgRect = () => {
-            return OC.RoundRect.getInstance(this.x, this.y, this.w, this.h, this.r).setOffset(this.offsetX, this.offsetY).setScale(this.scaleX, this.scaleY).setRotateDeg(this.rotateDeg).setOpacity(this.opacity);
-        };
+        function getBgRect(self) {
+            return OC.RoundRect.getInstance(self.x, self.y, self.w, self.h, self.r).setOffset(self.offsetX, self.offsetY).setScale(self.scaleX, self.scaleY).setRotateDeg(self.rotateDeg).setOpacity(self.opacity);
+        }
         // stroke
         this.stroke = function(ctx = OC.defaultContext) {
-            getBgRect().setLineWidth(this.lineWidth).setStrokeStyle(this.strokeStyle).stroke(ctx);
+            getBgRect(this).setLineWidth(this.lineWidth).setStrokeStyle(this.strokeStyle).stroke(ctx);
             this.strokeText(ctx);
             return this;
         };
         // fill
         this.fill = function(ctx = OC.defaultContext) {
-            getBgRect().setFillStyle(this.fillStyle).fill(ctx);
+            getBgRect(this).setFillStyle(this.fillStyle).fill(ctx);
             this.fillText(ctx);
             return this;
         };
@@ -786,7 +786,7 @@
         };
         // draw
         this.draw = function(ctx = OC.defaultContext) {
-            getBgRect().setLineWidth(this.lineWidth).setStrokeStyle(this.strokeStyle).setFillStyle(this.fillStyle).draw(ctx);
+            getBgRect(this).setLineWidth(this.lineWidth).setStrokeStyle(this.strokeStyle).setFillStyle(this.fillStyle).draw(ctx);
             this.drawText(ctx);
             return this;
         };
