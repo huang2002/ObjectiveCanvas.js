@@ -61,8 +61,8 @@
     // promise //
     // ------- //
 
-    // promise
-    function Promise() {
+    // defer
+    function Deferred() {
         function run(arr, args) {
             arg = args;
             while (arr.length) {
@@ -104,6 +104,18 @@
         };
         this.caught = function(...args) {
             run(fail, arguments);
+        };
+        this.promise = function() {
+            return new Promise(this);
+        };
+    }
+    // promise
+    function Promise(deferred) {
+        this.success = deferred.success;
+        this.failure = deferred.failure;
+        this.error = deferred.error;
+        this.promise = function() {
+            return this;
         };
     }
 
@@ -855,24 +867,48 @@
         return obj;
     };
     OC.Spirit.preload = function(...url) {
-        function load(url, promise) {
+        function load(url, deferred) {
             if (typeof url !== 'string') {
                 throw new Error('"' + url + '" is not a url!');
             }
             var img = new Image();
             img.onload = function(e) {
                 if (urls.length) {
-                    load([].shift.call(urls), promise);
+                    load([].shift.call(urls), deferred);
                 } else {
-                    promise.resolve();
+                    deferred.resolve();
                 }
             };
             img.src = url;
         }
-        var promise = new Promise();
+        var deferred = new Deferred();
         var urls = arguments;
-        load([].shift.call(urls), promise);
-        return promise;
+        load([].shift.call(urls), deferred);
+        return deferred.promise();
+    };
+
+    // load object from JSON
+    OC.parse = function(str) {
+        if (typeof str !== 'string') {
+            throw new Error('Please input a json string!');
+        }
+        var obj = JSON.parse(str);
+        var ans = null;
+        if (obj instanceof Array) {
+            ans = [];
+            for (var i = 0; i < obj.length; i++) {
+                ans.push(OC.parse(obj[i]));
+            }
+        } else {
+            if (!('type' in obj)) {
+                throw new Error('Can not find the property "type"!');
+            } else if (!(obj.type in OC)) {
+                throw new Error('No such a type "' + obj.type + '"');
+            }
+            ans = new Object();
+            OC[obj.type].apply(ans, obj.args || []);
+        }
+        return ans;
     };
 
 })();
