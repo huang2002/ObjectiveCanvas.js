@@ -137,26 +137,16 @@
     // ------------------ //
 
     // object
-    OC.Object = function(x = 0, y = 0) {
+    OC.Object = function() {
         // private obj
         var self = {};
         // define properties
-        defineProperty_num_any.call(this, self, "x");
-        defineProperty_num_any.call(this, self, "y");
         defineProperty.call(this, self, "offsetX");
         defineProperty.call(this, self, "offsetY");
         defineProperty.call(this, self, "opacity", val => typeof val === 'number' && val >= 0 && val <= 1, undefined, 1);
         defineProperty_num_any.call(this, self, "scaleX", 1);
         defineProperty_num_any.call(this, self, "scaleY", 1);
         defineProperty.call(this, self, "rotateDeg");
-        // set pos
-        this.setPos = function(x, y) {
-            try {
-                return this.setX(x).setY(y);
-            } catch (err) {
-                throw new Error(err.message);
-            }
-        };
         // set offset
         this.setOffset = function(x = 0, y = x) {
             try {
@@ -206,7 +196,7 @@
         this.fix = function(ctx = OC.defaultContext, callback = function(ctx) {}) {
             ctx.save();
             ctx.globalAlpha = this.opacity;
-            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
+            ctx.translate(this.offsetX, this.offsetY);
             ctx.scale(this.scaleX, this.scaleY);
             ctx.rotate(this.rotateDeg / 180 * Math.PI);
             callback(ctx);
@@ -237,12 +227,22 @@
         // private obj
         var self = {};
         // define properties
+        defineProperty_num_any.call(this, self, "x");
+        defineProperty_num_any.call(this, self, "y");
         defineProperty.call(this, self, "fillStyle", undefined, undefined, "#cccccc");
         defineProperty.call(this, self, "strokeStyle", undefined, undefined, "#000000");
         defineProperty_num_fixed.call(this, self, "lineWidth", 1);
         defineProperty_num_fixed.call(this, self, "shadowBlur");
         defineProperty.call(this, self, "shadowOffsetX");
         defineProperty.call(this, self, "shadowOffsetY");
+        // set pos
+        this.setPos = function(x, y) {
+            try {
+                return this.setX(x).setY(y);
+            } catch (err) {
+                throw new Error(err.message);
+            }
+        };
         // set shadow offset
         this.setShadowOffset = function(x, y = x) {
             try {
@@ -258,6 +258,16 @@
             } catch (err) {
                 throw new Error(err.message);
             }
+        };
+        // fix
+        this.fix = function(ctx = OC.defaultContext, callback = function(ctx) {}) {
+            ctx.save();
+            ctx.globalAlpha = this.opacity;
+            ctx.translate(this.x + this.offsetX, this.y + this.offsetY);
+            ctx.scale(this.scaleX, this.scaleY);
+            ctx.rotate(this.rotateDeg / 180 * Math.PI);
+            callback(ctx);
+            ctx.restore();
         };
         // fixed path
         this.fixedPath = function(ctx = OC.defaultContext) {
@@ -887,7 +897,7 @@
         return deferred.promise();
     };
 
-    // load object from JSON
+    // load object from JSON string
     OC.parse = function(str) {
         if (typeof str !== 'string') {
             throw new Error('Please input a json string!');
@@ -907,6 +917,12 @@
             }
             ans = new Object();
             OC[obj.type].apply(ans, obj.args || []);
+            for (var property in obj) {
+                if (property === 'type') {
+                    continue;
+                }
+                ans[property] = obj[property];
+            }
         }
         return ans;
     };
