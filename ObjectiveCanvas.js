@@ -202,13 +202,6 @@
             callback(ctx);
             ctx.restore();
         };
-        // init
-        try {
-            this.x = x;
-            this.y = y;
-        } catch (err) {
-            throw new Error(err.message);
-        }
     };
     OC.Object.getInstance = function() {
         var obj = {};
