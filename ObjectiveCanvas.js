@@ -225,6 +225,7 @@
         defineProperty.call(this, self, "fillStyle", undefined, undefined, "#cccccc");
         defineProperty.call(this, self, "strokeStyle", undefined, undefined, "#000000");
         defineProperty_num_fixed.call(this, self, "lineWidth", 1);
+        defineProperty.call(this, self, "shadowColor");
         defineProperty_num_fixed.call(this, self, "shadowBlur");
         defineProperty.call(this, self, "shadowOffsetX");
         defineProperty.call(this, self, "shadowOffsetY");
@@ -722,6 +723,11 @@
         defineProperty.call(this, self, "font", undefined, undefined, font);
         defineProperty.call(this, self, "textFillStyle", undefined, undefined, '#555555');
         defineProperty.call(this, self, "textStrokeStyle", undefined, undefined, '#000000');
+        defineProperty_num_any.call(this, self, 'textShadowOffsetX', 0);
+        defineProperty_num_any.call(this, self, 'textShadowOffsetY', 0);
+        defineProperty_num_fixed.call(this, self, 'textShadowBlur', 0);
+        defineProperty.call(this, self, 'textShadowColor', undefined, undefined, 'rgba(0,0,0,0)');
+        defineProperty_num_fixed.call(this, self, 'textLineWidth', 1);
         defineProperty_in.call(this, self, "align", ["center", "left", "right"], "center");
         defineProperty_in.call(this, self, "baseline", ["middle", "top", "bottom"], "middle");
         // set color
@@ -735,6 +741,10 @@
             } catch (err) {
                 throw new Error(err.message);
             }
+        };
+        // set text shadow
+        this.setTextShadow = function(offsetX, offsetY, blur, color) {
+            return this.setTextShadowOffsetX(offsetX).setTextShadowOffsetY(offsetY).setTextShadowBlur(blur).setTextShadowColor(color);
         };
         // fix pos
         function fix(self, ctx) {
@@ -761,6 +771,7 @@
         this.strokeText = function(ctx = OC.defaultContext) {
             var self = this;
             this.fix(ctx, function(ctx) {
+                ctx.lineWidth = self.textLineWidth;
                 ctx.strokeStyle = self.textStrokeStyle;
                 var { x, y } = fix(self, ctx);
                 ctx.strokeText(self.text, x, y);
@@ -771,6 +782,10 @@
         this.fillText = function(ctx = OC.defaultContext) {
             var self = this;
             this.fix(ctx, function(ctx) {
+                ctx.shadowColor = self.textShadowColor;
+                ctx.shadowBlur = self.textShadowBlur;
+                ctx.shadowOffsetX = self.textShadowOffsetX;
+                ctx.shadowOffsetY = self.textShadowOffsetY;
                 ctx.fillStyle = self.textFillStyle;
                 var { x, y } = fix(self, ctx);
                 ctx.fillText(self.text, x, y);
@@ -779,7 +794,7 @@
         };
         // get bg rect
         function getBgRect(self) {
-            return OC.RoundRect.getInstance(self.x, self.y, self.w, self.h, self.r).setOffset(self.offsetX, self.offsetY).setScale(self.scaleX, self.scaleY).setRotateDeg(self.rotateDeg).setOpacity(self.opacity);
+            return OC.RoundRect.getInstance(self.x, self.y, self.w, self.h, self.r).setOffset(self.offsetX, self.offsetY).setScale(self.scaleX, self.scaleY).setRotateDeg(self.rotateDeg).setOpacity(self.opacity).setShadow(self.shadowOffsetX, self.shadowOffsetY, self.shadowBlur, self.shadowColor);
         }
         // stroke
         this.stroke = function(ctx = OC.defaultContext) {
