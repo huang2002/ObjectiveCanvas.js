@@ -571,9 +571,9 @@
         defineProperty_num_any.call(this, self, "x2");
         defineProperty_num_any.call(this, self, "y2");
         defineProperty.call(this, self, "lineCap", undefined, undefined, "butt");
-        defineProperty.call(this, self, "lineJoin", undefined, undefined, "miter");
         // path
         this.path = function(ctx = OC.defaultContext) {
+            ctx.beginPath();
             ctx.moveTo(this.x1, this.y1);
             ctx.lineTo(this.x2, this.y2);
         };
@@ -619,6 +619,7 @@
             }
             return true;
         }, undefined, new Array());
+        defineProperty.call(this, self, "lineJoin", undefined, undefined, "miter");
         // set point
         this.setPoint = function(index = this.points.length - 1, x = null, y = x) {
             if (typeof index !== "number" || index < 0 || index > this.points.length) {
