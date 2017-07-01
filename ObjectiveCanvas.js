@@ -26,7 +26,8 @@
             },
             get: function() {
                 return obj[property] !== undefined ? obj[property] : value;
-            }
+            },
+            configurable: true
         });
         var up = property;
         up = up.split('');
@@ -147,6 +148,16 @@
         defineProperty_num_any.call(this, self, "scaleX", 1);
         defineProperty_num_any.call(this, self, "scaleY", 1);
         defineProperty.call(this, self, "rotateDeg");
+        // set properties
+        this.set = function(description) {
+            if (!description || !(description instanceof Object)) {
+                throw new Error('"description" must be an object!');
+            }
+            for (var name in description) {
+                this[name] = description[name];
+            }
+            return this;
+        };
         // set offset
         this.setOffset = function(x = 0, y = x) {
             try {
@@ -532,7 +543,7 @@
             var PI = Math.PI;
             var count = this.angleCount;
             var angle = 360 / count;
-            ctx.moveTo(x, y - R);
+            ctx.moveTo(0, -R);
             for (var i = 0; i < angleCount; i++) {
                 ctx.lineTo(r * sin((angle / 2 + i * angle) / 180 * PI), -r * cos((angle / 2 + i * angle) / 180 * PI));
                 ctx.lineTo(R * sin((angle + i * angle) / 180 * PI), -R * cos((angle + i * angle) / 180 * PI));
@@ -826,6 +837,84 @@
         var obj = {};
         this.apply(obj, arguments);
         return obj;;
+    };
+
+    // textarea
+    OC.Textarea = function(textArr = [], lineHeight = 30, font = '25px Consolas', x = 0, y = 0, w = 0, h = 0, r = 0) {
+        // inherit
+        try {
+            OC.Text.call(this, '', font, x, y, w, h, r);
+        } catch (err) {
+            throw new Error(err.message);
+        }
+        // private obj
+        var self = {};
+        // define properties
+        defineProperty.call(this, self, 'lineHeight', val => typeof val === 'number', undefined, 30);
+        defineProperty.call(this, self, 'text', val => val instanceof Array, undefined, []);
+        // add line
+        this.addLine = function(str = '') {
+            if (typeof str !== 'string') {
+                throw new Error('"str" must be a string!');
+            }
+            this.text.push(str);
+            return this;
+        };
+        // text
+        var text = new OC.Text();
+        var _this = this;
+        var initText = function() {
+            text.set({
+                font: _this.font,
+                x: _this.x,
+                align: _this.align,
+                baseline: _this.baseline
+            });
+        };
+        // stroke
+        this.strokeText = function(ctx = OC.defaultContext) {
+            initText();
+            this.text.forEach(function(txt, i) {
+                text.set({
+                    text: txt,
+                    y: _this.y + i * _this.lineHeight,
+                    textStrokeStyle: _this.textStrokeStyle,
+                    textLineWidth: _this.textLineWidth
+                });
+                text.strokeText(ctx);
+            });
+            return this;
+        };
+        // fill
+        this.fillText = function(ctx = OC.defaultContext) {
+            initText();
+            this.text.forEach(function(txt, i) {
+                text.set({
+                    text: txt,
+                    y: _this.y + i * _this.lineHeight,
+                    textFillStyle: _this.textFillStyle,
+                    textShadowColor: _this.textShadowColor,
+                    textShadowBlur: _this.textShadowBlur,
+                    textShadowOffsetX: _this.textShadowOffsetX,
+                    textShadowOffsetY: _this.textShadowOffsetY
+                });
+                text.fillText(ctx);
+            });
+            return this;
+        };
+        // draw
+        this.drawText = function(ctx = OC.defaultContext) {
+            return this.fillText(ctx).strokeText(ctx);
+        };
+        // init
+        this.lines = textArr;
+        this.lineHeight = lineHeight;
+        this.text = textArr;
+    };
+    OC.Textarea.getInstance = function(textArr = [''], lineHeight = 30, font = '25px Consolas', x = 0, y = 0, w = 0, h = 0, r = 0) {
+        var obj = {};
+        this.apply(obj, arguments);
+        return obj;
     };
 
     // spirit
