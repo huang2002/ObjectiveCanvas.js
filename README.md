@@ -29,8 +29,10 @@ Some constructors are under the main object(OC).
 * Circle
 * Star
 * Line
+* Arc
 * Polygon
 * Text
+* Textarea
 * ......
 
 ## What can I do with them ?
@@ -69,7 +71,7 @@ Circle.offsetY; // 0
 
 ## OC.parse(str)
 Now, you can create an object by json string. For instance, you can get a red circle at (100, 100) by:
-`'{ "type": "Circle", "x": 100, "y": 100, "r": 60, "fillStyle": "#FF0000" }'`.
+`OC.parse('{ "type": "Circle", "x": 100, "y": 100, "r": 60, "fillStyle": "#FF0000" }')`.
 
 ## Advice
 Last but not least, I suggest you have a look personally. This will let you know more about it.

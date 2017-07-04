@@ -604,6 +604,35 @@
         return obj;;
     };
 
+    // arc
+    OC.Arc = function(x = 0, y = 0, r = 0, start = 0, end = 0) {
+        // inherit
+        OC.Shape.call(this, x, y);
+        // private obj
+        var self = {};
+        // define properties
+        defineProperty.call(this, self, "lineCap", undefined, undefined, "butt");
+        defineProperty_num_fixed.call(this, self, 'r', 0);
+        defineProperty_num_any.call(this, self, 'start', 0);
+        defineProperty_num_any.call(this, self, 'end', 0);
+        defineProperty_in.call(this, self, 'anticlockwise', [false, true], false);
+        // path
+        this.path = function(ctx = OC.defaultContext) {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, this.start, this.end, this.anticlockwise);
+            return this;
+        };
+        // init
+        this.r = r;
+        this.start = start;
+        this.end = end;
+    };
+    OC.Arc.getInstance = function(x = 0, y = 0, r = 0, start = 0, end = 0) {
+        var obj = {};
+        this.apply(obj, arguments);
+        return obj;
+    };
+
     // polygon
     OC.Polygon = function(...points) {
         // inherit
