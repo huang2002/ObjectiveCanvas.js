@@ -605,7 +605,7 @@
     };
 
     // arc
-    OC.Arc = function(x = 0, y = 0, r = 0, start = 0, end = 0) {
+    OC.Arc = function(x = 0, y = 0, r = 0, start = 0, end = 0, anticlockwise = false) {
         // inherit
         OC.Shape.call(this, x, y);
         // private obj
@@ -626,6 +626,7 @@
         this.r = r;
         this.start = start;
         this.end = end;
+        this.anticlockwise = anticlockwise;
     };
     OC.Arc.getInstance = function(x = 0, y = 0, r = 0, start = 0, end = 0) {
         var obj = {};
@@ -651,7 +652,7 @@
             try {
                 arr.forEach(p => {
                     if (typeof p.x !== "number" || typeof p.y !== "number") {
-                        throw new Error();
+                        throw new Error('This error is just thrown to jump out of the forEach loop. So, if you see this error, there must be something wrong.');
                     }
                 });
             } catch (err) {
