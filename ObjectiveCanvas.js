@@ -548,6 +548,7 @@
                 ctx.lineTo(r * sin((angle / 2 + i * angle) / 180 * PI), -r * cos((angle / 2 + i * angle) / 180 * PI));
                 ctx.lineTo(R * sin((angle + i * angle) / 180 * PI), -R * cos((angle + i * angle) / 180 * PI));
             }
+            ctx.lineTo(r * sin((360 - angle / 2) / 180 * PI), -r * cos((360 - angle / 2) / 180 * PI));
             ctx.closePath();
             return this;
         };
@@ -627,6 +628,7 @@
         this.start = start;
         this.end = end;
         this.anticlockwise = anticlockwise;
+        this.fillStyle = 'transparent';
     };
     OC.Arc.getInstance = function(x = 0, y = 0, r = 0, start = 0, end = 0) {
         var obj = {};
