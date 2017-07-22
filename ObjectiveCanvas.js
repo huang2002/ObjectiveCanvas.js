@@ -74,7 +74,7 @@
         }
         var suc = [];
         var fail = [];
-        var caught = [];
+        var err = [];
         var arg = null;
         this.success = function(fn) {
             if (!fn instanceof Function) {
@@ -103,8 +103,8 @@
         this.reject = function(...args) {
             run(fail, arguments);
         };
-        this.caught = function(...args) {
-            run(fail, arguments);
+        this.breakdown = function(...args) {
+            run(err, arguments);
         };
         this.promise = function() {
             return new Promise(this);
@@ -1019,6 +1019,7 @@
                     deferred.resolve();
                 }
             };
+            img.onerror = deferred.breakdown;
             img.src = url;
         }
         var deferred = new Deferred();
