@@ -544,7 +544,7 @@
             var count = this.angleCount;
             var angle = 360 / count;
             ctx.moveTo(0, -R);
-            for (var i = 0; i < angleCount; i++) {
+            for (var i = 0; i < count; i++) {
                 ctx.lineTo(r * sin((angle / 2 + i * angle) / 180 * PI), -r * cos((angle / 2 + i * angle) / 180 * PI));
                 ctx.lineTo(R * sin((angle + i * angle) / 180 * PI), -R * cos((angle + i * angle) / 180 * PI));
             }
