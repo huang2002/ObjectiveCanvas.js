@@ -29,6 +29,7 @@
         this.lineCap = 'butt';
         this.lineDashOffset = 0;
         this.opacity = 1;
+        this.clip = null;
     };
     OC.Object.prototype.setFillStyle = function(fillStyle) {
         this.fillStyle = fillStyle;
@@ -101,6 +102,10 @@
         this.lineDashOffset = offset;
         return this;
     };
+    OC.Object.prototype.setClip = function(clip) {
+        this.clip = clip;
+        return this;
+    };
     OC.Object.prototype.setScale = function(x, y) {
         return this.setScaleX(x).setScaleY(y);
     };
@@ -135,8 +140,20 @@
         ctx = ctx || OC.defaultContext;
         ctx.save();
         ctx.beginPath();
+        if (this.clip) {
+            ctx.globalAlpha = this.clip.opacity;
+            ctx.translate(this.clip.translateX + (this.clip.x || 0), this.clip.translateY + (this.clip.y || 0));
+            ctx.scale(this.clip.scaleX, this.clip.scaleY);
+            ctx.rotate(this.clip.rotate);
+            this.clip.path(ctx);
+            ctx.clip();
+            ctx.beginPath();
+            ctx.translate(-(this.clip.translateX + (this.clip.x || 0)), -(this.clip.translateY + (this.clip.y || 0)));
+            ctx.scale(1 / this.clip.scaleX, 1 / this.clip.scaleY);
+            ctx.rotate(-this.clip.rotate);
+        }
         ctx.globalAlpha = this.opacity;
-        ctx.translate(this.translateX, this.translateY);
+        ctx.translate(this.translateX + (this.x || 0), this.translateY + (this.y || 0));
         ctx.scale(this.scaleX, this.scaleY);
         ctx.rotate(this.rotate);
         this.path(ctx);
@@ -205,19 +222,6 @@
     };
     OC.Shape.prototype.setPos = function(x, y) {
         return this.setX(x).setY(y);
-    };
-    OC.Shape.prototype.fix = function(ctx, callback) {
-        ctx = ctx || OC.defaultContext;
-        ctx.save();
-        ctx.beginPath();
-        ctx.globalAlpha = this.opacity;
-        ctx.translate(this.translateX + this.x, this.translateY + this.y);
-        ctx.scale(this.scaleX, this.scaleY);
-        ctx.rotate(this.rotate);
-        this.path(ctx);
-        callback.call(this, ctx);
-        ctx.restore();
-        return this;
     };
 
     OC.Rect = function(x, y, w, h) {
