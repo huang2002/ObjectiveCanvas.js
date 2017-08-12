@@ -1,80 +1,80 @@
 # ObjectiveCanvas.js
-> To use &lt;canvas&gt; in a more beautiful way.
+> To use &lt;canvas> in an objective way.
 
-## What's ObjectiveCanvas(OC).js ?
-It contains some constructors which you can use to create some objects and draw them on &lt;canvas&gt;.
-
-For example, if you want to draw a red circle at (100,100), you can write:
-```
-var ctx = document.getElementById("canvas").getContext("2d");
-var x = 100, y = 100, r = 50;
-var circle = new OC.Circle(x, y, r);
-circle.setFillStyle("#FF0000");
-circle.fill(ctx);
-```
-or:
-```
-var ctx = document.getElementById("canvas").getContext("2d");
-OC.Circle.getInstance(100, 100, 50).setFillStyle("#FF0000").fill(ctx);
-```
-In a word, it aims to make you use &lt;canvas&gt; in a beautiful and objective way. 
-
-## What's in it ?
-Some constructors are under the main object(OC).
+## What's ObjectiveCanvas.js ?
+It defines some constructors which you can use to create objects and draw them on &lt;canvas>.
 ### Some constructors:
-* Object
-* Shape
-* Rect
-* RoundRect
-* Circle
-* Star
-* Line
-* Arc
-* Polygon
-* Text
-* Textarea
-* ......
+* OC.Object
+* OC.Shape
+* OC.Rect
+* OC.RoundRect
+* OC.Circle
+* OC.Arc
+* OC.Star
+* OC.Text
+* OC.Line
+* OC.Polygon
+* OC.Spirit
 
-## What can I do with them ?
-You can create objects and set properties of them. Then, draw them on &lt;canvas&gt;.
-### Some properties:
-* fillStyle
-* lineCap
-* lineJoin
-* lineWidth
-* offsetX
-* offsetY
-* opacity
-* rotateDeg
-* scaleX
-* scaleY
-* shadowBlur
-* shadowColor
-* shadowOffsetX
-* shadowOffsetY
-* strokeStyle
-* x
-* y
-* ......
+## How to use them ?
+1. Get an instance
+2. Set properties (position, transform, color, shadow, clip...)
+3. Draw it on &lt;canvas>.
+### Example:
+```html
+<!DOCTYPE html>
+<html>
 
-Also, you can set properties by methods, such as `setFillStyle(style)`. Besides, some properties can be set together by one method, for example, `setPos(x, y)`, `setShadow(offsetX, offsetY, blur, color)` and so on. What's more, some methods enable you to change properties instead of setting them:
+<head>
+    <title>ObjectiveCanvas.js</title>
+    <!-- Load OC(.min).js -->
+    <script src="OC.min.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+
+        var canvas = document.querySelector('#canvas'),
+            ctx = canvas.getContext('2d'),
+            circle = new OC.Circle(); // create a circle
+
+        /* set position */
+        circle.setX(100);
+        circle.setY(100);
+        // equals to circle.setPos(100, 100);
+
+        /* set color */
+        circle.setFillStyle('#ff0');
+        circle.setStrokeStyle('#f00');
+
+        /* draw */
+        circle.draw(ctx);
+        // You can also set OC.defaultContext
+        // and just write: xxx.draw();
+
+    </script>
+</body>
+
+</html>
 ```
-Circle.offsetX; // 0
-Circle.offsetY; // 0
-Circle.translate(50, 50);
-Circle.offsetX; // 50
-Circle.offsetY; // 50
-Circle.translate(100, -50);
-Circle.offsetX; // 150
-Circle.offsetY; // 0
+
+## OC.Object.prototype.set(obj)
+You can use this method to set properties of an object by giving an object.
+### Example:
+```javascript
+circle.set({
+    lineWidth: 2,
+    shadowColor: 'rgba(0,0,0,.5)',
+    shadowBlur: 10
+});
 ```
 
 ## OC.parse(str)
-Now, you can create an object by json string. For instance, you can get a red circle at (100, 100) by:
-`OC.parse('{ "type": "Circle", "x": 100, "y": 100, "r": 60, "fillStyle": "#FF0000" }')`.
+This method enable you to get canvas objects from json strings.
+### Example:
+```javascript
+var rect = OC.parse('{ "constructor": "Rect", "x": 100, "y": 100, "w": 200, "h": 200, "fillStyle": "#00f" }');
+```
 
-## Advice
-Last but not least, I suggest you have a look personally. This will let you know more about it.
-
-## End
-Thanks for your spending time looking at this document.
+## Try it !
