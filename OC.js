@@ -1,3 +1,8 @@
+/**
+ * OC.js
+ * @author hhh
+ * @see https://github.com/huang2002/ObjectiveCanvas.js
+ */
 (function() {
 
     if (window.OC) {
@@ -11,6 +16,14 @@
     // methods
     OC.setDefaultContext = function(ctx) {
         this.defaultContext = ctx;
+    };
+
+    // BoundingRect
+    OC.BoundingRect = function(x, y, w, h) {
+        this.x = x || 0;
+        this.y = y || 0;
+        this.w = w || 0;
+        this.h = h || 0;
     };
 
     // shapes
@@ -30,6 +43,7 @@
         this.lineDashOffset = 0;
         this.opacity = 1;
         this.clip = null;
+        this.boundColor = '#f00';
     };
     OC.Object.prototype.setFillStyle = function(fillStyle) {
         this.fillStyle = fillStyle;
@@ -125,7 +139,7 @@
         this.shadowOffsetY += y;
         return this;
     };
-    OC.Object.prototype.rotate = function(rad) {
+    OC.Object.prototype.rotateRad = function(rad) {
         this.rotate += rad;
         return this;
     };
@@ -142,15 +156,17 @@
         ctx.beginPath();
         if (this.clip) {
             ctx.globalAlpha = this.clip.opacity;
-            ctx.translate(this.clip.translateX + (this.clip.x || 0), this.clip.translateY + (this.clip.y || 0));
+            var transX = this.clip.translateX + (this.clip.x || 0),
+                transY = this.clip.translateY + (this.clip.y || 0);
+            ctx.translate(transX, transY);
             ctx.scale(this.clip.scaleX, this.clip.scaleY);
             ctx.rotate(this.clip.rotate);
             this.clip.path(ctx);
             ctx.clip();
             ctx.beginPath();
-            ctx.translate(-(this.clip.translateX + (this.clip.x || 0)), -(this.clip.translateY + (this.clip.y || 0)));
-            ctx.scale(1 / this.clip.scaleX, 1 / this.clip.scaleY);
             ctx.rotate(-this.clip.rotate);
+            ctx.scale(1 / this.clip.scaleX, 1 / this.clip.scaleY);
+            ctx.translate(-transX, -transY);
         }
         ctx.globalAlpha = this.opacity;
         ctx.translate(this.translateX + (this.x || 0), this.translateY + (this.y || 0));
@@ -168,10 +184,12 @@
     OC.Object.prototype.fill = function(ctx) {
         this.fix(ctx, function(ctx) {
             ctx.fillStyle = this.fillStyle;
-            ctx.shadowColor = this.shadowColor;
-            ctx.shadowBlur = this.shadowBlur;
-            ctx.shadowOffsetX = this.shadowOffsetX;
-            ctx.shadowOffsetY = this.shadowOffsetY;
+            if (this.shadowColor.toLowerCase() !== 'none') {
+                ctx.shadowColor = this.shadowColor;
+                ctx.shadowBlur = this.shadowBlur;
+                ctx.shadowOffsetX = this.shadowOffsetX;
+                ctx.shadowOffsetY = this.shadowOffsetY;
+            }
             ctx.fill();
         });
         return this;
@@ -200,12 +218,38 @@
     };
     OC.Object.prototype.isPointInPath = function(x, y) {
         var canvas = document.createElement('canvas'),
-            ctx = canvas.getContext('2d');
-        this.path(ctx);
-        return ctx.isPointInPath(x - this.x - this.translateX, y - this.y - this.translateY);
+            ctx = canvas.getContext('2d'),
+            rect = this.getBoundingRect(),
+            fill = this.fillStyle,
+            stroke = this.strokeStyle,
+            opacity = this.opacity;
+        canvas.width = rect.w;
+        canvas.height = rect.h;
+        ctx.translate(-rect.x, -rect.y);
+        this.fillStyle = '#000';
+        this.strokeStyle = '#000';
+        this.opacity = 1;
+        this.draw(ctx);
+        this.fillStyle = fill;
+        this.strokeStyle = stroke;
+        this.opacity = opacity;
+        return ctx.getImageData(x - rect.x, y - rect.y, 1, 1).data[3] > 0;
+    };
+    OC.Object.prototype.getBoundingRect = function() {
+        return new OC.BoundingRect();
+    };
+    OC.Object.prototype.drawBoundingRect = function(ctx) {
+        ctx = ctx || OC.defaultContext;
+        var rect = this.getBoundingRect();
+        ctx.save();
+        ctx.strokeStyle = this.boundColor;
+        ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+        ctx.restore();
+        return this;
     };
 
     OC.Shape = function(x, y) {
+        OC.Object.call(this);
         this.x = x || 0;
         this.y = y || 0;
         this.scaleX = 1;
@@ -241,6 +285,37 @@
     OC.Rect.prototype.path = function(ctx) {
         ctx.rect(0, 0, this.w, this.h);
     };
+    OC.Rect.prototype.getBoundingRect = function() {
+        var x = this.x,
+            y = this.y,
+            w = this.w,
+            h = this.h,
+            rtt = this.rotate;
+        if (rtt % 360 !== 0) {
+            var c = Math.sqrt(w * w + h * h),
+                xArr = [
+                    x,
+                    x - h * Math.sin(rtt),
+                    x + w * Math.cos(rtt),
+                    x + c * Math.cos(rtt + Math.atan(h / w))
+                ],
+                x_min = Math.min.apply(Math, xArr),
+                x_max = Math.max.apply(Math, xArr),
+                yArr = [
+                    y,
+                    y + h * Math.cos(rtt),
+                    y + w * Math.sin(rtt),
+                    y + c * Math.sin(rtt + Math.atan(h / w))
+                ],
+                y_min = Math.min.apply(Math, yArr),
+                y_max = Math.max.apply(Math, yArr);
+            x = x_min;
+            y = y_min;
+            w = x_max - x_min;
+            h = y_max - y_min;
+        }
+        return new OC.BoundingRect(x + this.translateX, y + this.translateY, w * this.scaleX, h * this.scaleY);
+    };
 
     OC.Circle = function(x, y, r) {
         OC.Shape.call(this, x, y);
@@ -253,6 +328,9 @@
     };
     OC.Circle.prototype.path = function(ctx) {
         ctx.arc(0, 0, this.r, 0, Math.PI * 2);
+    };
+    OC.Circle.prototype.getBoundingRect = function() {
+        return new OC.BoundingRect(this.x + this.translateX - this.r * this.scaleX, this.y + this.translateY - this.r * this.scaleY, this.r * 2 * this.scaleX, this.r * 2 * this.scaleY);
     };
 
     OC.Arc = function(x, y, r, start, end, anticlockwise) {
@@ -293,7 +371,7 @@
             x = this.x,
             y = this.y,
             r = this.r,
-            min = Math.min(w, h);
+            min = Math.min(w, h) / 2;
         if (Math.abs(r) > min) {
             r = r > 0 ? min : -min;
         }
@@ -340,19 +418,30 @@
         return this;
     };
     OC.Star.prototype.path = function(ctx) {
-        var r = this.innerRadius;
-        var R = this.outerRadius;
-        var sin = Math.sin;
-        var cos = Math.cos;
-        var PI = Math.PI;
-        var count = this.count;
-        var angle = 360 / count;
+        var r = this.innerRadius,
+            R = this.outerRadius,
+            sin = Math.sin,
+            cos = Math.cos,
+            PI = Math.PI,
+            count = this.count,
+            angle = 360 / count;
         ctx.moveTo(0, -R);
         for (var i = 0; i < count; i++) {
             ctx.lineTo(r * sin((angle / 2 + i * angle) / 180 * PI), -r * cos((angle / 2 + i * angle) / 180 * PI));
             ctx.lineTo(R * sin((angle + i * angle) / 180 * PI), -R * cos((angle + i * angle) / 180 * PI));
         }
         ctx.lineTo(r * sin((360 - angle / 2) / 180 * PI), -r * cos((360 - angle / 2) / 180 * PI));
+    };
+    OC.Star.prototype.getBoundingRect = function() {
+        return OC.Circle.prototype.getBoundingRect.call({
+            x: this.x,
+            y: this.y,
+            scaleX: this.scaleX,
+            scaleY: this.scaleY,
+            translateX: this.translateX,
+            translateY: this.translateY,
+            r: this.outerRadius
+        });
     };
 
     OC.Text = function(text, font, x, y, w, h, r) {
@@ -535,13 +624,26 @@
     };
     OC.Polygon.prototype = new OC.Object();
     OC.Polygon.prototype.path = function(ctx) {
-        [].forEach.call(this.points, function(p, i) {
+        this.points.forEach(function(p, i) {
             if (i === 0) {
                 ctx.moveTo(p.x, p.y);
             } else {
                 ctx.lineTo(p.x, p.y);
             }
         });
+    };
+    OC.Polygon.prototype.getBoundingRect = function() {
+        var x_max, x_min, y_max, y_min;
+        this.points.forEach(function(p, i) {
+            if (i === 0) {
+                x = p.x;
+                y = p.y;
+            } else {
+                x = Math.max(x, p.x);
+                y = Math.max(y, p.y);
+            }
+        });
+        return new OC.BoundingRect(x_min + this.translateX, y_min + this.translateY, (x_max - x_min) * this.scaleX, (y_max - y_min) * this.scaleY);
     };
 
     OC.Line = function(x1, y1, x2, y2) {
@@ -577,6 +679,20 @@
     OC.Line.prototype.path = function(ctx) {
         ctx.moveTo(this.x1, this.y1);
         ctx.lineTo(this.x2, this.y2);
+    };
+    OC.Line.prototype.getBoundingRect = function() {
+        var x = Math.max(this.x1, this.x2),
+            y = Math.max(this.y1, this.y2);
+        return OC.Rect.prototype.getBoundingRect.call({
+            x: x,
+            y: y,
+            w: x - Math.min(this.x1, this.x2),
+            h: y - Math.min(this.y1, this.y2),
+            scaleX: this.scaleX,
+            scaleY: this.scaleY,
+            translateX: this.translateX,
+            translateY: this.translateY
+        });
     };
 
     OC.Sprit = function(src, x, y) {
@@ -643,6 +759,12 @@
         if (src) {
             this.load(src);
         }
+    };
+    OC.Sprit.prototype.getBoundingRect = function() {
+        if (!this.ready) {
+            return new OC.BoundingRect();
+        }
+        return new OC.BoundingRect(this.dstX, this.dstY, this.dstW || this.img.width, this.dstH || this.img.height);
     };
 
     // parse from json string

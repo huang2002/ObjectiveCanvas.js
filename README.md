@@ -19,7 +19,7 @@ It defines some constructors which you can use to create objects and draw them o
 ## How to use them ?
 1. Get an instance
 2. Set properties (position, transform, color, shadow, clip...)
-3. Draw it on &lt;canvas>.
+3. Draw it on &lt;canvas>
 ### Example:
 ```html
 <!DOCTYPE html>
@@ -77,4 +77,4 @@ This method enable you to get canvas objects from json strings.
 var rect = OC.parse('{ "constructor": "Rect", "x": 100, "y": 100, "w": 200, "h": 200, "fillStyle": "#00f" }');
 ```
 
-## Try it !
+Try it !
