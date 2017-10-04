@@ -172,7 +172,9 @@
         ctx.translate(this.translateX + (this.x || 0), this.translateY + (this.y || 0));
         ctx.scale(this.scaleX, this.scaleY);
         ctx.rotate(this.rotate);
-        this.path(ctx);
+        if (this.path) {
+            this.path(ctx);
+        }
         callback.call(this, ctx);
         ctx.restore();
         return this;
@@ -577,10 +579,12 @@
             ctx.font = this.font;
             ctx.globalAlpha = this.textOpacity;
             ctx.fillStyle = this.textFillStyle;
-            ctx.shadowColor = this.textShadowColor;
-            ctx.shadowBlur = this.textShadowBlur;
-            ctx.shadowOffsetX = this.textShadowOffsetX;
-            ctx.shadowOffsetY = this.textShadowOffsetY;
+            if (this.textShadowColor.toLowerCase() !== 'none') {
+                ctx.shadowColor = this.textShadowColor;
+                ctx.shadowBlur = this.textShadowBlur;
+                ctx.shadowOffsetX = this.textShadowOffsetX;
+                ctx.shadowOffsetY = this.textShadowOffsetY;
+            }
             var calc = this.calc();
             ctx.textAlign = this.align;
             ctx.textBaseline = calc.baseline;
@@ -695,7 +699,8 @@
         });
     };
 
-    OC.Sprit = function(src, x, y) {
+    OC.Spirit = function(src, x, y) {
+        OC.Object.call(this);
         var ready = false;
         this.img = new Image();
         this.srcX = 0;
@@ -733,13 +738,19 @@
                 if (typeof srcH !== 'number') {
                     srcH = this.img.height;
                 }
-                if (typeof ts.dstW !== 'number') {
+                if (typeof dstW !== 'number') {
                     dstW = this.img.width;
                 }
                 if (typeof dstH !== 'number') {
                     dstH = this.img.height;
                 }
-                ctx.drawImage(img, this.srcX, this.srcY, srcW, srcH, this.dstX, this.dstY, dstW, dstH);
+                this.fix(ctx, function() {
+                    ctx.drawImage(
+                        this.img,
+                        this.srcX, this.srcY, srcW, srcH,
+                        this.dstX, this.dstY, dstW, dstH
+                    );
+                });
             }
             return this;
         };
@@ -760,11 +771,84 @@
             this.load(src);
         }
     };
-    OC.Sprit.prototype.getBoundingRect = function() {
+    OC.Spirit.prototype = new OC.Object();
+    OC.Spirit.prototype.getBoundingRect = function() {
         if (!this.ready) {
             return new OC.BoundingRect();
         }
         return new OC.BoundingRect(this.dstX, this.dstY, this.dstW || this.img.width, this.dstH || this.img.height);
+    };
+
+    OC.Article = function(txtArr, font, x, y, w, h, r, lineHeight) {
+        OC.RoundRect.call(this, x, y, w, h, r);
+        this.texts = [];
+        this.padding = 10;
+        this.lineHeight = lineHeight || 30;
+        this.setTexts.apply(this, arguments);
+    };
+    OC.Article.prototype = new OC.RoundRect();
+    OC.Article.prototype.setLineHeight = function(lineHeight) {
+        this.lineHeight = lineHeight;
+        return this;
+    };
+    OC.Article.prototype.setPadding = function(padding) {
+        this.padding = padding;
+        return this;
+    };
+    OC.Article.prototype.setTexts = function(txtArr, font, x, y, w, h, r) {
+        this.texts = txtArr.map(function(txt) {
+            return new OC.Text(txt, font, x, y, w, h, r);
+        });
+        return this;
+    };
+    OC.Article.prototype.setEach = function(options) {
+        this.texts.forEach(function(text) {
+            text.set(options);
+        });
+        return this;
+    };
+    OC.Article.prototype.fixTexts = function() {
+        this.texts.forEach(function(text, i) {
+            switch (text.align) {
+                case 'left':
+                    text.x = this.x + this.padding;
+                    break;
+                case 'right':
+                    text.x = this.x + this.w - this.padding;
+                    break;
+                case 'center':
+                    text.x = this.x + this.w / 2;
+                    break;
+            }
+            text.y = this.y + (i + .5) * this.lineHeight + this.padding;
+        }, this);
+        return this;
+    };
+    OC.Article.prototype.strokeTexts = function(ctx) {
+        this.fixTexts();
+        this.texts.forEach(function(text, i) {
+            text.stroke(ctx);
+        }, this);
+        return this;
+    };
+    OC.Article.prototype.fillTexts = function(ctx) {
+        this.fixTexts();
+        this.texts.forEach(function(text, i) {
+            text.fill(ctx);
+        }, this);
+        return this;
+    };
+    OC.Article.prototype.drawTexts = function(ctx) {
+        this.fixTexts();
+        this.texts.forEach(function(text, i) {
+            text.draw(ctx);
+        }, this);
+        return this;
+    };
+    OC.Article.prototype.draw = function(ctx) {
+        OC.RoundRect.prototype.draw.call(this, ctx);
+        this.drawTexts(ctx);
+        return this;
     };
 
     // parse from json string
@@ -772,7 +856,7 @@
         try {
             var config = JSON.parse(str);
             if (!config.constructor) {
-                return null;
+                return undefined;
             }
             var o = new OC[config.constructor];
             o.set(config);
