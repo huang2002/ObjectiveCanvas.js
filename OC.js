@@ -729,9 +729,7 @@
             ctx = ctx || OC.defaultContext;
             if (ready) {
                 var srcW = this.srcW,
-                    srcH = this.srcH,
-                    dstW = this.dstW,
-                    dstH = this.dstH;
+                    srcH = this.srcH
                 if (typeof srcW !== 'number') {
                     srcW = this.img.width;
                 }
@@ -748,7 +746,7 @@
                     ctx.drawImage(
                         this.img,
                         this.srcX, this.srcY, srcW, srcH,
-                        this.dstX, this.dstY, dstW, dstH
+                        0, 0, dstW, dstH
                     );
                 });
             }
@@ -757,6 +755,22 @@
         Object.defineProperty(this, 'ready', {
             get: function() {
                 return ready;
+            }
+        });
+        Object.defineProperty(this, 'x', {
+            set: function(val) {
+                this.dstX = val;
+            },
+            get: function() {
+                return this.dstX;
+            }
+        });
+        Object.defineProperty(this, 'y', {
+            set: function(val) {
+                this.dstY = val;
+            },
+            get: function() {
+                return this.dstY;
             }
         });
         Object.defineProperty(this, 'src', {
