@@ -798,7 +798,7 @@
         this.texts = [];
         this.padding = 10;
         this.lineHeight = lineHeight || 30;
-        this.setTexts.apply(this, arguments);
+        this.initTexts.apply(this, arguments);
     };
     OC.Article.prototype = new OC.RoundRect();
     OC.Article.prototype.setLineHeight = function(lineHeight) {
@@ -809,10 +809,21 @@
         this.padding = padding;
         return this;
     };
-    OC.Article.prototype.setTexts = function(txtArr, font, x, y, w, h, r) {
+    OC.Article.prototype.initTexts = function(txtArr, font, x, y, w, h, r) {
         this.texts = txtArr.map(function(txt) {
             return new OC.Text(txt, font, x, y, w, h, r);
         });
+        return this;
+    };
+    OC.Article.prototype.setTexts = function(txtArr, font, x, y, w, h, r) {
+        var texts = this.texts;
+        Hi.each(txtArr, function(txt, i) {
+            if (i < texts.length) {
+                texts[i].text = txt;
+            } else {
+                texts[i].text = new OC.Text(txt, font, x, y, w, h, r);
+            }
+        }, this);
         return this;
     };
     OC.Article.prototype.setEach = function(options) {
