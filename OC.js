@@ -793,29 +793,29 @@
         return new OC.BoundingRect(this.dstX, this.dstY, this.dstW || this.img.width, this.dstH || this.img.height);
     };
 
-    OC.Article = function(txtArr, font, x, y, w, h, r, lineHeight) {
+    OC.TextGroup = function(txtArr, font, x, y, w, h, r, lineHeight) {
         OC.RoundRect.call(this, x, y, w, h, r);
         this.texts = [];
         this.padding = 10;
         this.lineHeight = lineHeight || 30;
         this.initTexts.apply(this, arguments);
     };
-    OC.Article.prototype = new OC.RoundRect();
-    OC.Article.prototype.setLineHeight = function(lineHeight) {
+    OC.TextGroup.prototype = new OC.RoundRect();
+    OC.TextGroup.prototype.setLineHeight = function(lineHeight) {
         this.lineHeight = lineHeight;
         return this;
     };
-    OC.Article.prototype.setPadding = function(padding) {
+    OC.TextGroup.prototype.setPadding = function(padding) {
         this.padding = padding;
         return this;
     };
-    OC.Article.prototype.initTexts = function(txtArr, font, x, y, w, h, r) {
+    OC.TextGroup.prototype.initTexts = function(txtArr, font, x, y, w, h, r) {
         this.texts = txtArr.map(function(txt) {
             return new OC.Text(txt, font, x, y, w, h, r);
         });
         return this;
     };
-    OC.Article.prototype.setTexts = function(txtArr, font, x, y, w, h, r) {
+    OC.TextGroup.prototype.setTexts = function(txtArr, font, x, y, w, h, r) {
         var texts = this.texts;
         Hi.each(txtArr, function(txt, i) {
             if (i < texts.length) {
@@ -826,13 +826,13 @@
         }, this);
         return this;
     };
-    OC.Article.prototype.setEach = function(options) {
+    OC.TextGroup.prototype.setEach = function(options) {
         this.texts.forEach(function(text) {
             text.set(options);
         });
         return this;
     };
-    OC.Article.prototype.fixTexts = function() {
+    OC.TextGroup.prototype.fixTexts = function() {
         this.texts.forEach(function(text, i) {
             switch (text.align) {
                 case 'left':
@@ -849,28 +849,28 @@
         }, this);
         return this;
     };
-    OC.Article.prototype.strokeTexts = function(ctx) {
+    OC.TextGroup.prototype.strokeTexts = function(ctx) {
         this.fixTexts();
         this.texts.forEach(function(text, i) {
             text.stroke(ctx);
         }, this);
         return this;
     };
-    OC.Article.prototype.fillTexts = function(ctx) {
+    OC.TextGroup.prototype.fillTexts = function(ctx) {
         this.fixTexts();
         this.texts.forEach(function(text, i) {
             text.fill(ctx);
         }, this);
         return this;
     };
-    OC.Article.prototype.drawTexts = function(ctx) {
+    OC.TextGroup.prototype.drawTexts = function(ctx) {
         this.fixTexts();
         this.texts.forEach(function(text, i) {
             text.draw(ctx);
         }, this);
         return this;
     };
-    OC.Article.prototype.draw = function(ctx) {
+    OC.TextGroup.prototype.draw = function(ctx) {
         OC.RoundRect.prototype.draw.call(this, ctx);
         this.drawTexts(ctx);
         return this;
