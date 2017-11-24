@@ -14,7 +14,7 @@ It defines some constructors which you can use to create objects and draw them o
 * OC.Text
 * OC.Line
 * OC.Polygon
-* OC.Spirit
+* OC.Sprite
 * OC.TextGroup
 
 ## How to use them ?
