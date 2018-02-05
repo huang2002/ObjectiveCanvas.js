@@ -40,7 +40,7 @@
         this.lineWidth = 1;
         this.lineJoin = 'miter';
         this.lineCap = 'butt';
-        this.lineDashOffset = 0;
+        this.lineDash = null;
         this.opacity = 1;
         this.clip = null;
         this.boundColor = '#f00';
@@ -112,7 +112,7 @@
         this.opacity = opacity;
         return this;
     };
-    OC.Object.prototype.setLineDashOffset = function (offset) {
+    OC.Object.prototype.setLineDash = function (offset) {
         this.lineDashOffset = offset;
         return this;
     };
@@ -202,7 +202,9 @@
             ctx.lineWidth = this.lineWidth;
             ctx.lineCap = this.lineCap;
             ctx.lineJoin = this.lineJoin;
-            ctx.lineDashOffset = this.lineDashOffset;
+            if (this.lineDash) {
+                ctx.setLineDash(this.lineDash);
+            }
             ctx.stroke();
         });
         return this;
@@ -786,6 +788,9 @@
         }
     };
     OC.Sprite.prototype = new OC.Object();
+    OC.Sprite.prototype.center = function () {
+        return this.translate(-(this.dstW || this.img.width) / 2, -(this.dstH || this.img.height) / 2);
+    };
     OC.Sprite.prototype.getBoundingRect = function () {
         if (!this.ready) {
             return new OC.BoundingRect();
